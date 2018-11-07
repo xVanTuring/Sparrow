@@ -1,9 +1,7 @@
 <template>
   <div class="left-root">
-    <div class="left-top-container">
-      <div class="traffic-red"></div>
-      <div class="traffic-yellow"></div>
-      <div class="traffic-green"></div>
+    <div class="left-top-container focus">
+      <Traffic/>
     </div>
     <div class="fixed-folders">
       <!-- Fixed -->
@@ -15,18 +13,23 @@
       <div>Folders</div>
       <IconAdd class="add" @click.native="addFolderClick" baseColor="rgb(145, 145, 145)"></IconAdd>
     </div>
+    <!-- cross-tree -->
     <div class="scroll-bar">
-      <DraggableTree :data="filterWord.length>0?filteredFolders:folders" :draggable="filterWord.length===0" ref="dtree" @change="treeChange">
-        <div slot-scope="{data,store}">
-          <FolderItem :type="data.type" 
-            @folderRename="folderRename" 
-            :extra="{data,store}" 
-            :open="data.open" 
-            :childCount="data.children.length" 
-            :title="data.name" 
-            :count="image2FolderMap[data.id]?image2FolderMap[data.id].length:0" 
-            :selected="data.id===selectedFolder" 
-            :id="data.id" @click.native="folderClick(data.id,data,store)"></FolderItem>
+      <DraggableTree :data="filterWord.length>0?filteredFolders:folders" 
+        :draggable="filterWord.length===0" cross-tree="true" @change="treeChange" ref="dtree"  >
+        <div slot-scope="{data, store}">
+          <template v-if="!data.isDragPlaceHolder">
+              <FolderItem 
+                @folderRename="folderRename"
+                :type="data.type" 
+                :extra="{data,store}" 
+                :open="data.open" 
+                :childCount="data.children.length" 
+                :title="data.name" 
+                :count="image2FolderMap[data.id]?image2FolderMap[data.id].length:0" 
+                :selected="data.id===selectedFolder" 
+                :id="data.id" @click.native="folderClick(data.id,data,store)"></FolderItem>
+          </template>
         </div>
       </DraggableTree>
     </div>
@@ -39,6 +42,7 @@
 
 <script>
 import FolderItem from './Sub/FolderItem'
+import Traffic from './Sub/Traffic'
 import IconAdd from './Sub/IconAdd'
 import IconImport from './Sub/IconImport'
 import _ from 'lodash'
@@ -72,7 +76,8 @@ export default {
     IconAdd,
     IconImport,
     VuePerfectScrollbar,
-    ScrollBar
+    ScrollBar,
+    Traffic
   },
   methods: {
     folderClick (id, data, _store) {
@@ -137,7 +142,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
 .left-root {
   position: absolute;
   width: 230px;
@@ -156,22 +160,6 @@ export default {
   padding-left: 8px;
   font-size: 14px;
   box-sizing: border-box;
-  .traffic-green,
-  .traffic-yellow,
-  .traffic-red {
-    display: inline-block;
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background-color: rgb(40, 201, 64);
-    margin-right: 2px;
-  }
-  .traffic-yellow {
-    background-color: rgb(255, 189, 46);
-  }
-  .traffic-red {
-    background-color: rgb(255, 95, 87);
-  }
   .title {
     float: right;
     margin-right: 16px;
@@ -199,7 +187,7 @@ export default {
     border: 1px solid transparent;
     transition: all 0.5s;
     &:focus {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
     &:disabled {
       cursor: not-allowed;
@@ -267,9 +255,9 @@ export default {
 }
 
 .draggable-placeholder-inner {
-  border: 1px dashed $primary;
+  border: 1px dashed rgb(49, 141, 226);
   box-sizing: border-box;
-  background: rgba($primary, 0.09);
+  background: rgba(rgb(49, 141, 226), 0.09);
   padding: 0;
 }
 

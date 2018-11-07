@@ -100,7 +100,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .gallery-folder {
   color: rgb(122, 122, 122);
   text-align: center;
@@ -113,7 +113,7 @@ export default {
     border-radius: 4px;
     box-sizing: border-box;
     &.selected {
-      border: 2px solid $primary;
+      border: 2px solid rgb(49, 141, 226);
     }
   }
   .image-container {

@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .setting-root{
     position: absolute;
     width: 100%;

@@ -177,7 +177,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .item {
   position: relative;
 	pointer-events: none;
@@ -210,7 +210,7 @@ export default {
     top: 8px;
     height: 20px;
     width: 20px;
-    background-color: $primary;
+    background-color: rgb(49, 141, 226);
     font-size: 12px;
     text-align: center;
     line-height: 24px;
@@ -238,7 +238,7 @@ export default {
 	border-radius: 4px;
 }
 .item.selected .thumbnail {
-	border: 2px solid $primary;
+	border: 2px solid rgb(49, 141, 226);
 }
 .item .thumbnail img {
 	width: 100%;

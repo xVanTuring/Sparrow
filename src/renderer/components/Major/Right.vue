@@ -42,7 +42,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .right-root {
   width: 230px;
   position: absolute;

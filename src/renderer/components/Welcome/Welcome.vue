@@ -295,7 +295,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/globals.scss';
+
 // layout
 @keyframes opacityin {
   0%{opacity: 0; }
@@ -344,7 +344,7 @@ export default {
   width: 30px;
   border: 3px solid rgba(121, 121, 121, 0.15);
   border-radius: 50%;
-  border-left-color: $primary;
+  border-left-color: rgb(49, 141, 226);
   opacity: 0;
   animation:opacityin .3s ease .5s forwards, spin .6s linear infinite;
 }
@@ -440,7 +440,7 @@ export default {
 
 <style lang="scss" scoped>
 /* detail */
-@import '@/globals.scss';
+
 
 
 ::selection {

@@ -290,7 +290,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .el-popover {
   background: rgb(59, 59, 59);
   color: white;
@@ -347,7 +347,7 @@ export default {
     border: 1px solid transparent;
     transition: all 0.5s;
     &:focus {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
   }
   .folder-tag {
@@ -370,10 +370,10 @@ export default {
     outline: none;
     overflow: auto;
     &:hover {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
     &.keep-border {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
     &::-webkit-scrollbar {
       width: 6px;

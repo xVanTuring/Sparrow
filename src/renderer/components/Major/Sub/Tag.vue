@@ -65,21 +65,21 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .tag-item {
   display: inline-block;
   min-width: 40px;
   height: 20px;
   padding: 2px 0;
   background-color: rgb(95, 95, 95);
-  //  $primary;
+  //  rgb(49, 141, 226);
   color: white;
   border-radius: 2px;
   margin-left: 2px;
   margin-right: 2px;
   margin-bottom: 4px;
   &.activated {
-    background-color: $primary;
+    background-color: rgb(49, 141, 226);
   }
   .name {
     float: left;

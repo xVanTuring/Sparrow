@@ -20,7 +20,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .empty-folder-root{
   color: white;
   height: 100%;

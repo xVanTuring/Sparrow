@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .color-pan{
   display: flex;
   align-items: center;

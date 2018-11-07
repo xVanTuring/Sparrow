@@ -14,10 +14,12 @@ import tokenSource from 'cancellation'
 import uuid from 'uuid/v4'
 // import _ from 'lodash'
 import sizeOf from 'image-size'
-import gm from 'gm'
 import bluebird from 'bluebird'
 import palette from 'image-palette2'
 import * as utils from '@/utils'
+// https://github.com/aheckmann/gm/issues/754
+// import gm from 'gm'
+const gm = require('gm').subClass({ appPath: 'E:\\App\\GraphicsMagick-1.3.30-Q16\\' })
 bluebird.promisifyAll(gm.prototype)
 const appVersion = remote.app.getVersion()
 const taskTokens = []

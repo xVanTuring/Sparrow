@@ -85,7 +85,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .bottom-root{
   color: white;
   height: 40px;
@@ -101,7 +101,7 @@ export default {
   .progress{
     width: 0%;
     height: 100%;
-    background-color: $primary;
+    background-color: rgb(49, 141, 226);
     position: absolute;
     left: 0;
     transition: all .1s;

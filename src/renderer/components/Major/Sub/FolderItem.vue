@@ -180,7 +180,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .folder-item {
   user-select: none;
   cursor: default;
@@ -199,12 +199,12 @@ export default {
       position: absolute;
       right: 0;
       width: 4px;
-      background-color: $primary;
+      background-color: rgb(49, 141, 226);
       height: 100%;
     }
   }
   &.drag-over {
-    background-color: rgba($color: $primary, $alpha: 0.7);
+    background-color: rgba($color: rgb(49, 141, 226), $alpha: 0.7);
   }
   .folder,
   img {

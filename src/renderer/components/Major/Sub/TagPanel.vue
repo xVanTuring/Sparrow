@@ -112,7 +112,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .tag-panel {
   position: relative;
   .alphabet-list {
@@ -149,7 +149,7 @@ export default {
     border: 1px solid transparent;
     transition: all 0.5s;
     &:focus {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
   }
   .tag-group,.filtered-tag {

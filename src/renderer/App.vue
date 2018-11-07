@@ -71,7 +71,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 body {
   padding: 0;
   margin: 0;
@@ -85,12 +85,12 @@ body {
   overflow: hidden;
 }
 .vue-slider-component .vue-slider-process{
-  background-color:$primary !important;
+  background-color:rgb(49, 141, 226) !important;
 }
 .vue-slider-dot-handle{
   box-sizing: border-box !important;
   border: 5px solid white !important;
-  background-color: $primary !important;
+  background-color: rgb(49, 141, 226) !important;
 }
 .search-in-input {
   background: url(/static/svg/search.svg) center no-repeat ;

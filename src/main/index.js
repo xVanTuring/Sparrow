@@ -60,11 +60,11 @@ function createBackgroundProcess () {
   backgroundWindow = new BrowserWindow({
     height: 100,
     width: 300,
-    icon: path.join(__static, './icons/png/64x64.png')
-    // focusable: false,
-    // resizable: false,
-    // show: false
-    // parent: mainWindow
+    icon: path.join(__static, './icons/png/64x64.png'),
+    focusable: false,
+    resizable: false,
+    show: false,
+    parent: mainWindow
   })
   backgroundWindow.setMenu(null)
   backgroundWindow.loadURL(backgroundURL)

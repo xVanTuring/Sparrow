@@ -376,7 +376,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/globals.scss';
+
 .center-root {
   position: absolute;
   left: 230px;
@@ -436,7 +436,7 @@ export default {
           border: 1px solid transparent;
           transition: all 0.3s ease,border 0.5s;
           &:focus {
-            border: 1px solid $primary;
+            border: 1px solid rgb(49, 141, 226);
           }
           &:disabled {
             cursor: not-allowed;
@@ -516,8 +516,8 @@ export default {
     box-sizing: border-box;
     border: 1px solid transparent;
     &.visible {
-      background-color: rgba($primary, 0.35);
-      border: 1px solid $primary;
+      background-color: rgba(rgb(49, 141, 226), 0.35);
+      border: 1px solid rgb(49, 141, 226);
     }
   }
 }
@@ -541,15 +541,15 @@ export default {
   justify-content: center;
   transition: all 0.2s ease;
   &.file-drag-over {
-    border-color: $primary;
-    background-color: rgba($primary, 0.15);
+    border-color: rgb(49, 141, 226);
+    background-color: rgba(rgb(49, 141, 226), 0.15);
   }
   .tip {
     padding: 0 50px;
     line-height: 72px;
     height: 72px;
     border-radius: 3px;
-    background-color: $primary;
+    background-color: rgb(49, 141, 226);
     color: white;
     pointer-events: none;
   }

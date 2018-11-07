@@ -99,7 +99,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/globals.scss';
+
 .right-folder {
   color: white;
   .name-input {
@@ -119,7 +119,7 @@ export default {
     border: 1px solid transparent;
     transition: all 0.5s;
     &:focus {
-      border: 1px solid $primary;
+      border: 1px solid rgb(49, 141, 226);
     }
     &:disabled {
       cursor: not-allowed;
