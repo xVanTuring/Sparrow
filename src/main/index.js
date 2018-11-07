@@ -42,12 +42,13 @@ function createWindow () {
     mainWindow = null
   })
   mainWindow.webContents.on('will-navigate', (eve) => {
-    // no navigate
     eve.preventDefault()
   })
+
   mainWindow.webContents.on('dom-ready', () => {
     if (backgroundWindow) {
-      backgroundWindow.webContents.send('reload-library')
+      // backgroundWindow.webContents.send('reload-library')
+      backgroundWindow.webContents.reload()
     } else {
       createBackgroundProcess()
     }

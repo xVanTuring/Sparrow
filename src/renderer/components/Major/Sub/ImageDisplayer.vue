@@ -32,7 +32,7 @@ export default {
       const subImages = $('.image-displayer img')
       for (let index = 0; index < subImages.length; index++) {
         $(subImages[index]).css({
-          'transform': `rotate(${index * 8}deg)`
+          'transform': `rotate(${(index % 6) * 4}deg)`
         })
       }
     }
@@ -53,7 +53,7 @@ export default {
       max-height: 180px;
       max-width: 180px;
       object-fit: cover;
-      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.733);
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
   }
   // .item-2{
   //   transform: rotate(8deg);

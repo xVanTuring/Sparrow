@@ -2,14 +2,14 @@
   <div id="app" >
     <welcome v-if="!libraryLoaded" :createLibrary="displayCreateLibrary"></welcome>
     <Major v-else></Major>
-    <!-- <Setting v-if="displaySetting"></Setting> -->
+    <Setting v-if="displaySetting"></Setting>
   </div>
 </template>
 
 <script>
 import Welcome from '@/components/Welcome/Welcome'
 import Major from '@/components/Major/Major'
-// import Setting from '@/components/Settings/Setting'
+import Setting from '@/components/Settings/Setting'
 import * as utils from '@/utils'
 import store from '@/store'
 import { mapState } from 'vuex'
@@ -59,13 +59,13 @@ export default {
   name: 'sparrow',
   components: {
     Welcome,
-    Major
-    // Setting
+    Major,
+    Setting
   },
   computed: mapState({
     displayCreateLibrary: state => state.App.displayCreateLibrary,
-    libraryLoaded: state => state.App.libraryLoaded
-    // displaySetting: state => state.App.displaySetting
+    libraryLoaded: state => state.App.libraryLoaded,
+    displaySetting: state => state.App.displaySetting
   })
 }
 </script>

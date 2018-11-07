@@ -278,11 +278,6 @@ export default {
     }
 
   }
-  // watch: {
-  //   selectedImages (newV, oldV) {
-  //     console.log(newV)
-  //   }
-  // }
 }
 </script>
 

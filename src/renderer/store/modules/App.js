@@ -24,12 +24,22 @@ const state = {
   imageMap: {},
   tags: [],
   filterWord: '',
-  backSelectImages: []
+  backSelectImages: [],
+  imageSortType: 3
 }
 const mutations = {
   SET_FILTER_WORD (state, word) {
     state.filterWord = word
-    state.filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    const oldImageIds = state.filteredImages.map(item => {
+      return item.id
+    })
+    const newImageIds = filteredImages.map(item => {
+      return item.id
+    })
+    if (!sameStrArr(oldImageIds, newImageIds)) {
+      state.filteredImages = sortImages(filteredImages, state.imageSortType)
+    }
   },
   SET_SELECTED_SUB_FOLDER (state, id) {
     state.selectedSubFolder = id
@@ -70,7 +80,8 @@ const mutations = {
   SET_SELECTED_FOLDER (state, folderId) {
     if (state.selectedFolder !== folderId) {
       state.selectedFolder = folderId
-      state.filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+      const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+      state.filteredImages = sortImages(filteredImages, state.imageSortType)
     }
   },
   SET_FOLDERS (state, folders) {
@@ -83,14 +94,16 @@ const mutations = {
   },
   SET_IMAGES (state, images) {
     state.images = images
-    state.filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    state.filteredImages = sortImages(filteredImages, state.imageSortType)
     ImageBind(state)
   },
   ADD_IMAGE (state, image) {
     const cloned = _.clone(state.images)
     cloned.push(image)
     state.images = cloned
-    state.filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+    state.filteredImages = sortImages(filteredImages, state.imageSortType)
     refreshImage2FolderMap(state)
     ImageBind(state)
   },
@@ -181,11 +194,43 @@ const filter = (allImages, folderId, filterWord, filterColor, filterOri, filterS
     if (result && filterWord && filterWord !== '') {
       const filterWordArr = filterWord.split(' ')
       result = filterWordArr.every(item => {
-        return img.name.toLowerCase().indexOf(item.toLowerCase()) !== -1 || img.tags.toLowerCase().indexOf(item.toLowerCase()) !== -1
+        return (containString(img.name, item) ||
+        containElement(img.tags, item) ||
+        containString(img.description, item) ||
+         containString(img.url, item))
       })
     }
     return result
   })
+}
+/**
+ *
+ * @param {string[]} arr1
+ * @param {string[]} arr2
+ */
+const sameStrArr = (arr1, arr2) => {
+  if (arr1.length !== arr2.length) {
+    return false
+  }
+  for (let index = 0; index < arr1.length; index++) {
+    const element = arr1[index]
+    if (arr2.indexOf(element) === -1) {
+      return false
+    }
+  }
+  return true
+}
+const containElement = (arr, item) => {
+  for (let index = 0; index < arr.length; index++) {
+    const element = arr[index]
+    if (containString(element, item)) {
+      return true
+    }
+  }
+  return false
+}
+const containString = (long, short) => {
+  return long.toLowerCase().indexOf(short.toLowerCase()) > -1
 }
 const refreshImage2FolderMap = (state) => {
   const image2FolderMap = {}
@@ -219,4 +264,32 @@ function ImageBind (state) {
   })
   state.tags = Array.from(new Set(tags))
   state.imageMap = imageMap
+}
+const sortImages = (filteredImages, imageSortType) => {
+  let sortFunc = null
+  switch (imageSortType) {
+    case 1:
+    // filename
+      sortFunc = (left, right) => {
+        return left.name > right.name ? 1 : -1
+      }
+      break
+    case 2:
+    // modification time
+      sortFunc = (left, right) => {
+        return left.lastModified > right.lastModified
+      }
+      break
+    case 3:
+    // fileSize
+      sortFunc = (left, right) => {
+        return left.size > right.size
+      }
+      break
+    default:
+      sortFunc = (left, right) => {
+        return left.name > right.name ? 1 : -1
+      }
+  }
+  return filteredImages.sort(sortFunc)
 }

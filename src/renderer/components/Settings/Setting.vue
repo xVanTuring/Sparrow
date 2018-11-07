@@ -33,7 +33,7 @@ export default {
         width: 760px;
         height: 460px;
         background: rgb(31, 31, 31);
-        box-shadow: 0 0 8px rgb(0, 0, 0);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
     }
 }
 </style>
