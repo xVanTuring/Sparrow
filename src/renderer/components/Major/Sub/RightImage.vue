@@ -289,10 +289,18 @@ export default {
 <style lang="scss">
 
 .el-popover {
-  background: rgb(59, 59, 59);
+  background-color: rgb(59, 59, 59) !important;
+  border:0 !important;
   color: white;
   border: 0px;
   height: 400px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4) !important;
+}
+.popper__arrow{
+  border-left-color:rgb(59, 59, 59) !important;
+  &::after{
+    border-left-color:rgb(59, 59, 59) !important;
+  }
 }
 .el-popper[x-placement^="left"] .popper__arrow {
   border-left-color: rgb(59, 59, 59);
