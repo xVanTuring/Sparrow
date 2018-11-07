@@ -250,7 +250,9 @@ export default {
           cloned.push(id)
           this.selected = cloned
         } else {
-          this.selected.splice(this.selected.indexOf(id), 1)
+          const cloned = _.clone(this.selected)
+          cloned.splice(this.selected.indexOf(id), 1)
+          this.selected = cloned
         }
         return
       }

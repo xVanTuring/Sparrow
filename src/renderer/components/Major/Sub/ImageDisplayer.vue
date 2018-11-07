@@ -1,8 +1,6 @@
 <template>
   <div class="image-displayer">
-    <img v-if="imagesPath.length>0"  class="img-displayer item-1" :class="{single:imagesPath.length===1}" :src="imagesPath[0]"/>
-    <img v-if="imagesPath.length>1" class="img-displayer item-2" :src="imagesPath[1]"/>
-    <img v-if="imagesPath.length>2"  class="img-displayer item-3" :src="imagesPath[2]"/>
+    <img  v-for="image in imagesPath" :src="image" :key="image"/>
   </div>
 </template>
 
@@ -17,9 +15,27 @@ export default {
     }
   },
   mounted () {
-    $('.img-displayer').on('mousedown', function (e) {
+    $('.image-displayer img').on('mousedown', function (e) {
       e.preventDefault()
     })
+    this.arrangeItem()
+  },
+  watch: {
+    imagesPath: function (newVal, oldV) {
+      this.$nextTick(function () {
+        this.arrangeItem()
+      })
+    }
+  },
+  methods: {
+    arrangeItem () {
+      const subImages = $('.image-displayer img')
+      for (let index = 0; index < subImages.length; index++) {
+        $(subImages[index]).css({
+          'transform': `rotate(${index * 8}deg)`
+        })
+      }
+    }
   }
 }
 </script>
@@ -39,12 +55,12 @@ export default {
       object-fit: cover;
       box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.733);
   }
-  .item-2{
-    transform: rotate(8deg);
-  }
-  .item-3{
-    transform: rotate(16deg);
-  }
+  // .item-2{
+  //   transform: rotate(8deg);
+  // }
+  // .item-3{
+  //   transform: rotate(16deg);
+  // }
   height: 230px;
   position: relative;
   // margin-top: 16px;

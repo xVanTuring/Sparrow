@@ -98,9 +98,6 @@ export default {
           let _path = 'file://' + path.join(state.App.libraryPath, 'images', item.id + '.image', imageName)
           return _path
         })
-        if (urls.length > 3) {
-          urls = urls.slice(urls.length - 3, urls.length)
-        }
         return urls
       },
       imageFolderMap (state) {
