@@ -1,0 +1,107 @@
+<template>
+  <div id="app" >
+    <welcome v-if="!libraryLoaded" :createLibrary="displayCreateLibrary"></welcome>
+    <Major v-else></Major>
+    <!-- <Setting v-if="displaySetting"></Setting> -->
+  </div>
+</template>
+
+<script>
+import Welcome from '@/components/Welcome/Welcome'
+import Major from '@/components/Major/Major'
+// import Setting from '@/components/Settings/Setting'
+import * as utils from '@/utils'
+import store from '@/store'
+import { mapState } from 'vuex'
+import { ipcRenderer, remote } from 'electron'
+
+ipcRenderer.on('ui-create-library', (event, args) => {
+  if (args == null) {
+    // create Library
+    remote.getCurrentWindow().setResizable(false)
+    setTimeout(() => {
+      store.dispatch('displayCreateLibrary')
+    }, 500)
+  }
+})
+ipcRenderer.on('ui-library-loaded', (events, args) => {
+  setTimeout(() => {
+    // calc countmap
+    store.commit('SET_LIBRARY_PATH', args.libraryDir)
+    store.commit('SET_IMAGES', args.images)
+    utils.folderWalker(args.folders, (item) => {
+      item.type = 'folder'
+      item.count = 0
+    })
+    store.commit('SET_FOLDERS', args.folders)
+    store.dispatch('libraryLoaded')
+    remote.getCurrentWindow().setResizable(true)
+    remote.getCurrentWindow().setSize(1320, 780, true)
+    remote.getCurrentWindow().focus()
+    remote.getCurrentWindow().center()
+  }, 100)
+})
+ipcRenderer.on('ui-image-loaded', (event, args) => {
+  store.commit('ADD_IMAGE', args)
+  store.commit('INCREASE_FILE_PROCESSED_COUNT')
+})
+ipcRenderer.on('ui-update-image', (event, meta) => {
+  store.commit('UPDATE_IMAGE', meta)
+  // notify
+  const id = '#item-' + meta.id
+  const title = id + ' .title'
+  const q = $(title)
+  if (q && q[0]) {
+    $(q[0]).text(meta.name)
+  }
+})
+export default {
+  name: 'sparrow',
+  components: {
+    Welcome,
+    Major
+    // Setting
+  },
+  computed: mapState({
+    displayCreateLibrary: state => state.App.displayCreateLibrary,
+    libraryLoaded: state => state.App.libraryLoaded
+    // displaySetting: state => state.App.displaySetting
+  })
+}
+</script>
+
+<style lang="scss">
+@import '@/globals.scss';
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  background-color: #333333;
+  user-select: none;
+  overflow: hidden;
+}
+.app{
+  position: relative;
+  overflow: hidden;
+}
+.vue-slider-component .vue-slider-process{
+  background-color:$primary !important;
+}
+.vue-slider-dot-handle{
+  box-sizing: border-box !important;
+  border: 5px solid white !important;
+  background-color: $primary !important;
+}
+.search-in-input {
+  background: url(/static/svg/search.svg) center no-repeat ;
+  background-size: 14px;
+  position: absolute;
+  pointer-events: none;
+}
+.sep{
+  width: 1px;
+  height: 12px;
+  background-color: #282828;
+  margin: 0 2px;
+}
+</style>
