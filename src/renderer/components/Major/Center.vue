@@ -6,7 +6,18 @@
         </vueSlider>
       </div>
       <div class="func-wrapper">
-        <div class="order-wrapper">
+        <!-- <div class="order-wrapper">
+        </div> -->
+        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===1,'inverse':imageSortType===-1}" @click="sortType(1)">
+          <span>N</span>
+        </div>
+        <div class="sep"></div>
+        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===2,'inverse':imageSortType===-2}" @click="sortType(2)">
+          <span>M</span>
+        </div>
+        <div class="sep"></div>
+        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===3,'inverse':imageSortType===-3}" @click="sortType(3)">
+          <span>S</span>
         </div>
         <div class="sep"></div>
         <div class="filter-wrapper">
@@ -302,6 +313,13 @@ export default {
       }
     },
     onScroll () {
+    },
+    sortType (type) {
+      if (this.imageSortType === type) {
+        store.commit('SET_IMAGE_SORT_TYPE', -type)
+      } else {
+        store.commit('SET_IMAGE_SORT_TYPE', type)
+      }
     }
   },
   computed: {
@@ -344,6 +362,9 @@ export default {
     },
     folders () {
       return store.state.App.folders
+    },
+    imageSortType () {
+      return store.state.App.imageSortType
     }
   },
   mounted () {
@@ -453,6 +474,25 @@ export default {
           right: 0;
         }
       }
+      .order-item{
+        padding: 4px;
+        border-radius: 2px;
+        width: 18px;
+        height: 18px;
+        color: white;
+        line-height: 18px;
+        text-align: center;
+        cursor: pointer;
+        &:hover {
+          background-color: #404040;
+        }
+        &.activated{
+          background-color: rgba(82, 82, 82, 0.685);
+        }
+        &.inverse{
+          transform: rotate(180deg);
+        }
+      }
 
       .order-wrapper,
       .filter-wrapper {
@@ -464,6 +504,9 @@ export default {
         background-size: 20px;
         &:hover {
           background-color: #404040;
+        }
+        &.activated{
+          background-color: rgba(82, 82, 82, 0.685);
         }
       }
       .order-wrapper {

@@ -110,6 +110,8 @@ export default {
       this.layout = new GridLayout({
         align: 'center',
         margin: 16
+        // minSize: 110
+        // maxSize: 100
       })
       this.ig.setLayout(this.layout)
       this.ig.on({

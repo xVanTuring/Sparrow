@@ -25,7 +25,7 @@ const state = {
   tags: [],
   filterWord: '',
   backSelectImages: [],
-  imageSortType: 3
+  imageSortType: 1
 }
 const mutations = {
   SET_FILTER_WORD (state, word) {
@@ -131,6 +131,14 @@ const mutations = {
   },
   SET_DESIPLAY_SETTING (state, bool) {
     state.displaySetting = bool
+  },
+  SET_IMAGE_SORT_TYPE (state, value) {
+    if (value === state.imageSortType) {
+      return
+    }
+    state.imageSortType = value
+    const clonedFilterType = _.clone(state.filteredImages)
+    state.filteredImages = sortImages(clonedFilterType, state.imageSortType)
   }
 }
 const actions = {
@@ -274,16 +282,34 @@ const sortImages = (filteredImages, imageSortType) => {
         return left.name > right.name ? 1 : -1
       }
       break
+    case -1:
+    // filename
+      sortFunc = (left, right) => {
+        return left.name < right.name ? 1 : -1
+      }
+      break
     case 2:
     // modification time
       sortFunc = (left, right) => {
         return left.lastModified > right.lastModified
       }
       break
+    case -2:
+      // modification time
+      sortFunc = (left, right) => {
+        return left.lastModified < right.lastModified
+      }
+      break
     case 3:
     // fileSize
       sortFunc = (left, right) => {
         return left.size > right.size
+      }
+      break
+    case -3:
+      // fileSize
+      sortFunc = (left, right) => {
+        return left.size < right.size
       }
       break
     default:
