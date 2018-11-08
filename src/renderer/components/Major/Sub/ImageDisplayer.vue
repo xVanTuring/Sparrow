@@ -54,6 +54,7 @@ export default {
       max-width: 180px;
       object-fit: cover;
       box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+      transition-duration: .4s;
   }
   // .item-2{
   //   transform: rotate(8deg);

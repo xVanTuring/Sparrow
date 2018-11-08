@@ -6,21 +6,30 @@
         </vueSlider>
       </div>
       <div class="func-wrapper">
-        <!-- <div class="order-wrapper">
-        </div> -->
-        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===1,'inverse':imageSortType===-1}" @click="sortType(1)">
-          <span>N</span>
+        <div class="sort-wrapper" :class="{'hidden':!changingSortType}">
+          <div class="order-item" 
+            :class="{'activated':Math.abs(imageSortType)===1,'inverse':imageSortType===-1}" 
+            @click="sortType(1)">
+            <span>N</span>
+          </div>
+          <div class="sep"></div>
+          <div class="order-item" 
+            :class="{'activated':Math.abs(imageSortType)===2,'inverse':imageSortType===-2}" 
+            @click="sortType(2)">
+            <span>M</span>
+          </div>
+          <div class="sep"></div>
+          <div class="order-item" 
+            :class="{'activated':Math.abs(imageSortType)===3,'inverse':imageSortType===-3}" 
+            @click="sortType(3)">
+            <span>S</span>
+          </div>
+          <div class="sep"></div>
+        </div>
+        <div class="order-wrapper" :class="{'activated':changingSortType}" @click="orderClick">
         </div>
         <div class="sep"></div>
-        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===2,'inverse':imageSortType===-2}" @click="sortType(2)">
-          <span>M</span>
-        </div>
-        <div class="sep"></div>
-        <div class="order-item" :class="{'activated':Math.abs(imageSortType)===3,'inverse':imageSortType===-3}" @click="sortType(3)">
-          <span>S</span>
-        </div>
-        <div class="sep"></div>
-        <div class="filter-wrapper">
+        <div class="filter-wrapper ">
         </div>
         <div class="sep"></div>
         <div class="input-wrapper">
@@ -320,6 +329,9 @@ export default {
       } else {
         store.commit('SET_IMAGE_SORT_TYPE', type)
       }
+    },
+    orderClick () {
+      store.commit('SET_SORT_TYPE', !this.changingSortType)
     }
   },
   computed: {
@@ -365,6 +377,9 @@ export default {
     },
     imageSortType () {
       return store.state.App.imageSortType
+    },
+    changingSortType () {
+      return store.state.Center.changingSortType
     }
   },
   mounted () {
@@ -422,7 +437,17 @@ export default {
       margin: auto;
       color: white;
     }
-
+    .sort-wrapper{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition-duration: .4s;
+      overflow: hidden;
+      width: 94px;
+      &.hidden{
+        width: 0;
+      }
+    }
     .func-wrapper {
       -webkit-app-region: no-drag;
       position: absolute;
@@ -496,17 +521,20 @@ export default {
 
       .order-wrapper,
       .filter-wrapper {
-        padding: 4px;
+        padding: 3px;
         border-radius: 2px;
         width: 18px;
         height: 18px;
         background: url(/static/svg/filter.svg) center no-repeat;
         background-size: 20px;
+        border: 1px solid transparent;
+        transition: border .4s;
         &:hover {
           background-color: #404040;
         }
         &.activated{
           background-color: rgba(82, 82, 82, 0.685);
+          border: 1px solid #318de2;
         }
       }
       .order-wrapper {
