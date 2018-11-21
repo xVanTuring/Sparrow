@@ -23,28 +23,28 @@ export default {
 }
 </script>
 <style>
-.check-box-container{
+.check-box-container {
   display: flex;
   /* justify-content:center; */
-  align-items:center;
+  align-items: center;
 }
-.check-box-title{
+.check-box-title {
   height: 18px;
   font-size: 14px;
   line-height: 18px;
   color: white;
   margin-left: 8px;
 }
-.check-box-outline{
+.check-box-outline {
   width: 18px;
   height: 18px;
-  border: 2px solid #318DE2;
+  border: 2px solid #318de2;
   border-radius: 2px;
   box-sizing: border-box;
   cursor: pointer;
 }
-.check-box-indi{
-  transition-duration: .3s ;
+.check-box-indi {
+  transition-duration: 0.3s;
   transition-timing-function: ease;
   width: 8px;
   height: 8px;
@@ -54,10 +54,10 @@ export default {
   margin-top: 3px;
   border-radius: 1px;
 }
-.checked{
+.checked {
   width: 8px;
   height: 8px;
-  background-color: #318DE2;
+  background-color: #318de2;
   transform: scale(1);
 }
 </style>

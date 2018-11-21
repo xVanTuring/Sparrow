@@ -11,15 +11,13 @@ import { ipcRenderer, remote } from 'electron'
 import async from 'async'
 import settings from 'electron-settings'
 import tokenSource from 'cancellation'
-// import _ from 'lodash'
-import sizeOf from 'image-size'
 import bluebird from 'bluebird'
 // import palette from 'image-palette2'
-import * as utils from '@/utils'
-import randomId from './background/randomId'
+import * as utils from '../utils'
+import { processImage } from './processImage'
 // https://github.com/aheckmann/gm/issues/754
-// var sharp = require('sharp')
-const gm = require('gm').subClass({
+// import gm from 'gm'
+export const gm = require('gm').subClass({
   appPath: 'E:\\App\\GraphicsMagick-1.3.30-Q16\\'
 })
 var palette = require('image-palette')
@@ -31,7 +29,7 @@ console.log('Sparrow: ', appVersion)
 /**
  * @type Library
  */
-let library = {}
+export let library = {}
 const dialog = remote.dialog
 // max-watch notify
 let metaFileWatcher
@@ -49,91 +47,57 @@ let imageProcessQueue
  * queue for write image meta file
  * @type {async.AsyncQueue} imageMetaWriteQueue
  */
-let imageMetaWriteQueue
+export let imageMetaWriteQueue
 /**
  * queue for gen palette
  * @type {async.AsyncQueue} paletteQueue
  */
-let paletteQueue
-function ErrorHandler (err, data, callback) {
+export let paletteQueue
+export function ErrorHandler (err) {
   // send log the electron
-  if (err) {
-    console.error(err)
-  } else if (callback) {
-    callback(data)
-  }
+  console.error(err)
 }
-
-const processPalette = (task, callback) => {
-  let { id, width, height, name, ext } = task
-  if (ext === 'svg') {
-    // callback()
-    // auto generate temp stream
-    callback()
-    return
-  }
-  let imageDir = path.join(library.imagesDir, id + '.image')
-  let configFilePath = path.join(imageDir, 'metadata.json')
-  let thumbPath = path.join(imageDir, name + '_thumb.png')
-  let imageTargetPath = path.join(imageDir, name + '.' + ext)
-  let finalPath = imageTargetPath
-  if (width > thumbSize && height > thumbSize) {
-    finalPath = thumbPath
-  }
-  pixels(finalPath).then(data => {
-    let { amount, colors } = palette(data)
+const paletteTask = async (task) => {
+  try {
+    let { id, width, height, name, ext } = task
+    if (ext === 'svg') {
+      // callback()
+      // auto generate temp stream
+      return
+    }
+    let imageDir = path.join(library.imagesDir, id + '.image')
+    let configFilePath = path.join(imageDir, 'metadata.json')
+    let thumbPath = path.join(imageDir, name + '_thumb.png')
+    let imageTargetPath = path.join(imageDir, name + '.' + ext)
+    let finalPath = imageTargetPath
+    if (width > thumbSize && height > thumbSize) {
+      finalPath = thumbPath
+    }
+    var { amount, colors } = palette(await pixels(finalPath))
     if (colors) {
       if (fs.existsSync(configFilePath)) {
-        colors = colors.map((item, index) => {
-          return {
-            color: item,
-            ratio: amount[index] * 100
+        imageMetaWriteQueue.push({
+          image: {
+            id: id,
+            palettes: colors
+          },
+          update: true
+        }, (err, meta) => {
+          if (err) {
+            ErrorHandler(err)
+          } else {
+            ipcRenderer.send('ui-update-image', meta)
           }
         })
-        imageMetaWriteQueue.push(
-          {
-            image: {
-              id: id,
-              palettes: colors
-            },
-            update: true
-          },
-          (err, meta) => {
-            ErrorHandler(err)
-            if (!err) {
-              ipcRenderer.send('ui-update-image', meta)
-            }
-          }
-        )
-        callback()
       } else {
         ErrorHandler('Meta File Not Found')
-        callback()
+        return Promise.reject(new Error('Meta File Not Found'))
       }
-    } else {
-      ErrorHandler('No Color Generated')
-      callback()
     }
-  }).catch(err => {
-    ErrorHandler(err)
-    callback()
-  })
-}
-const processQueueTask = (task, callback) => {
-  // TODO: add to user setting
-  if (task.cancelToken.isCancelled()) {
-    callback()
-    return
+  } catch (error) {
+    ErrorHandler(error)
+    return Promise.reject(error)
   }
-  processImage(task.image, task.cancelToken, (err, image) => {
-    if (err) {
-      ErrorHandler(err)
-      callback(err)
-    }
-    setTimeout(() => {
-      callback()
-    }, 50)
-  })
 }
 function initQueue () {
   libraryWriteQueue = async.queue((task, callback) => {
@@ -256,19 +220,31 @@ function initQueue () {
       }
     }
   }, 20)
-  imageProcessQueue = async.queue(processQueueTask, 10)
-  paletteQueue = async.queue(processPalette, 1)
+  imageProcessQueue = async.queue((task, callback) => {
+    // TODO: add to user setting
+    if (task.cancelToken.isCancelled()) {
+      callback()
+      return
+    }
+    processImage(task.image, null, (err, image) => {
+      if (err) {
+        ErrorHandler(err)
+      }
+      callback()
+    })
+  }, 10)
+  paletteQueue = async.queue(paletteTask)
 }
 initQueue()
 function createLibrary (parentPath, libraryName) {
-  // function error () {}
+  function error () {}
   // make sure the parentFolder exists
   if (fs.existsSync(parentPath)) {
     let fullLibraryPath = path.join(parentPath, libraryName)
     let imagesPath = path.join(parentPath, libraryName, 'images')
     // if libraryExists
     if (fs.existsSync(fullLibraryPath)) {
-      ErrorHandler('Library Exists')
+      error('Library Exists')
     } else {
       let libraryMetadata = {
         folders: [],
@@ -303,7 +279,7 @@ function createLibrary (parentPath, libraryName) {
         .catch(ErrorHandler)
     }
   } else {
-    ErrorHandler("Path Doesn't Exist")
+    error("Path Doesn't Exist")
   }
 }
 function initLibrary () {
@@ -457,146 +433,4 @@ function loadImages (callback) {
     .catch(ErrorHandler)
 }
 initLibrary()
-const thumbSize = 620
-/**
- *
- * @param {{lastModified:number,name:string,path:string,type:string,size:number,folder:string}} image
- * @param {*} cancelToken
- * @param {(err,image)=>void} callback
- */
-function processImage (image, cancelToken, callback) {
-  // mkdir dir
-  let id = randomId()
-  let imageDir = path.join(library.imagesDir, id + '.image')
-  let thumbPath = path.join(
-    imageDir,
-    image.name.replace(path.extname(image.name), '') + '_thumb.png'
-  )
-  let imageTargetPath = path.join(imageDir, image.name)
-  let { width, height } = sizeOf(image.path)
-  // TODO: exif
-  let imageMeta = {
-    id: id,
-    name: image.name.replace(path.extname(image.name), ''),
-    ext: path.extname(image.name).replace('.', ''),
-    width: width,
-    height: height,
-    folders: [],
-    tags: [],
-    exif: [],
-    lastModified: image.lastModified,
-    size: image.size,
-    isDeleted: false,
-    description: '',
-    url: ''
-  }
-  if (image.folder) {
-    imageMeta.folders = [image.folder]
-  }
-  fse.mkdirSync(imageDir)
-  fse.copySync(image.path, imageTargetPath)
-  gm(imageTargetPath)
-    .resize(thumbSize)
-    .write(thumbPath, (err) => {
-      if (err) {
-        callback(err)
-      } else {
-        ipcRenderer.send('ui-image-loaded', imageMeta)
-        callback()
-      }
-    })
-  imageMetaWriteQueue.push(
-    {
-      image: imageMeta
-    },
-    err => {
-      if (err) {
-        ErrorHandler(err)
-      } else {
-        console.log(`ID: ${imageMeta.id}, Meta Write Done`)
-      }
-    }
-  )
-  // sharp(imageTargetPath)
-  //   .resize(thumbSize, null)
-  //   .png()
-  //   .toFile(thumbPath, (err, info) => {
-  //     if (err) {
-  //       callback()
-  //     } else {
-  //       ipcRenderer.send('ui-image-loaded', imageMeta)
-
-  //     }
-  //   })
-}
-
-// region IPC
-ipcRenderer.on('bg-create-library', (event, args) => {
-  let libPath = args[0]
-  let libName = args[1]
-  createLibrary(libPath, libName)
-})
-
-ipcRenderer.on('bg-add-local-images', (event, args) => {
-  if (args.images && args.images.length > 0) {
-    let source = tokenSource()
-    taskTokens.push(source)
-    args.images.forEach(image => {
-      // addToImageProcessQueue(image)
-      let source = tokenSource()
-      taskTokens.push(source)
-      imageProcessQueue.push(
-        {
-          image: image,
-          cancelToken: source.token
-        },
-        err => {
-          if (err) {
-            ErrorHandler(err)
-          }
-        }
-      )
-    })
-  }
-})
-ipcRenderer.on('bg-save-library-config', (event, args) => {
-  // console.log(args)
-  // _.cloneDeep(args.folder)
-  utils.folderWalker(args.folders, item => {
-    delete item.count
-    delete item.type
-  })
-  libraryWriteQueue.push(
-    {
-      library: {
-        folders: args.folders
-      }
-    },
-    err => {
-      if (err) {
-        ErrorHandler(err)
-      }
-    }
-  )
-})
-ipcRenderer.on('bg-update-images', (event, images) => {
-  images.forEach(item => {
-    let source = tokenSource()
-    taskTokens.push(source)
-    imageMetaWriteQueue.push(
-      {
-        image: item,
-        update: true
-      },
-      (err, meta) => {
-        if (err) {
-          ErrorHandler(err)
-        } else if (meta) {
-          // console.log('Meta Write Done', meta)
-          ipcRenderer.send('ui-update-image', meta)
-        }
-      }
-    )
-  })
-})
-// endregion
+export const thumbSize = 620

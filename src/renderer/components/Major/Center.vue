@@ -1,5 +1,6 @@
 <template>
   <div class="center-root">
+    <!-- TODO: move to sub -->
     <div class="top-area">
       <div class="slider-wrapper">
         <vueSlider id="slider" v-model="zoomLevel" v-bind="options"> -->
@@ -53,7 +54,8 @@
       </div>
       <InfiniteGrid ref="infinitegrid" v-if="filteredImages.length > 0" :list="filteredImages" :itemSize="itemSize" :selected="selected"></InfiniteGrid>
       <EmptyFolder v-if="imageCount===0 && (subFolders.length===0)" :type="filterWord.length===0?0:1"/>
-      <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
+      <!-- fileDragOver -->
+      <div class="drop-file-mask" :class="{'file-drag-over':true}">
         <div v-if="fileDragOver" class="tip">
           Drop To Add Image(s)
         </div>
@@ -414,7 +416,6 @@ export default {
 }
 </script>
 <style lang="scss">
-
 .center-root {
   position: absolute;
   left: 230px;
@@ -437,14 +438,14 @@ export default {
       margin: auto;
       color: white;
     }
-    .sort-wrapper{
+    .sort-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
-      transition-duration: .4s;
+      transition-duration: 0.4s;
       overflow: hidden;
       width: 94px;
-      &.hidden{
+      &.hidden {
         width: 0;
       }
     }
@@ -482,7 +483,7 @@ export default {
             padding-right: 22px;
           }
           border: 1px solid transparent;
-          transition: all 0.3s ease,border 0.5s;
+          transition: all 0.3s ease, border 0.5s;
           &:focus {
             border: 1px solid rgb(49, 141, 226);
           }
@@ -499,7 +500,7 @@ export default {
           right: 0;
         }
       }
-      .order-item{
+      .order-item {
         padding: 4px;
         border-radius: 2px;
         width: 18px;
@@ -508,13 +509,14 @@ export default {
         line-height: 18px;
         text-align: center;
         cursor: pointer;
+        transition: all 0.3s;
         &:hover {
           background-color: #404040;
         }
-        &.activated{
+        &.activated {
           background-color: rgba(82, 82, 82, 0.685);
         }
-        &.inverse{
+        &.inverse {
           transform: rotate(180deg);
         }
       }
@@ -528,11 +530,11 @@ export default {
         background: url(/static/svg/filter.svg) center no-repeat;
         background-size: 20px;
         border: 1px solid transparent;
-        transition: border .4s;
+        transition: border 0.4s;
         &:hover {
           background-color: #404040;
         }
-        &.activated{
+        &.activated {
           background-color: rgba(82, 82, 82, 0.685);
           border: 1px solid #318de2;
         }

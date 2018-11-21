@@ -88,8 +88,8 @@ export default {
       var _path = 'file://' + path.join(store.state.App.libraryPath, 'images', options.id + '.image', imageName)
       return (
         `<div class="item" id="item-${options.id}">
-          <div class="thumbnail">
-            <img class="thumbnial-img" draggable="true" src="${_path}" data-src="${_path}" data-width="${options.width}" data-height="${options.height}">
+          <div class="thumbnail ">
+            <img class="thumbnial-img tbackground" draggable="true" src="${_path}" data-src="${_path}" data-width="${options.width}" data-height="${options.height}">
           </div>
           <!-- <div class="tag-num">${parseInt(Math.random() * 10 + 1)}</div> -->
           
@@ -103,9 +103,10 @@ export default {
       var num = 48
       const that = this
       this.ig = new InfiniteGrid(this.$el, {
-        useRecycle: false,
+        useRecycle: true,
         transitionDuration: 0.2,
-        threshold: 2000
+        threshold: 1000,
+        isOverflowScroll: false
       })
       this.layout = new GridLayout({
         align: 'center',
@@ -168,6 +169,7 @@ export default {
         this.ig.layout(false)
       })
     }
+
   },
   created () {
     this.$bus.$on('remove-item', this.removeItem)
@@ -254,5 +256,9 @@ export default {
   margin-top: 8px;
   pointer-events: none;
 }
-
+.tbackground {
+    background-position: 0 0, 10px 10px !important;
+    background-size: 20px 20px !important;
+    background-image: linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%,#eee 100%),linear-gradient(45deg,#eee 25%,#fff 25%,#fff 75%,#eee 75%,#eee 100%)!important;
+}
 </style>

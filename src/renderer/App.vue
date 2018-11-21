@@ -14,6 +14,7 @@ import * as utils from '@/utils'
 import store from '@/store'
 import { mapState } from 'vuex'
 import { ipcRenderer, remote } from 'electron'
+// import _ from 'lodash'
 
 ipcRenderer.on('ui-create-library', (event, args) => {
   if (args == null) {
@@ -41,10 +42,14 @@ ipcRenderer.on('ui-library-loaded', (events, args) => {
     remote.getCurrentWindow().center()
   }, 100)
 })
+// const addImageToVuex = _.throttle(function () {
+
+// })
 ipcRenderer.on('ui-image-loaded', (event, args) => {
-  store.commit('ADD_IMAGE', args)
-  store.commit('INCREASE_FILE_PROCESSED_COUNT')
+  // store.commit('ADD_IMAGE', args)
+  store.commit('INCREASE_FILE_PROCESSED_COUNT', args)
 })
+
 ipcRenderer.on('ui-update-image', (event, meta) => {
   store.commit('UPDATE_IMAGE', meta)
   // notify

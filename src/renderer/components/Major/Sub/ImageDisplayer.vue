@@ -1,6 +1,6 @@
 <template>
   <div class="image-displayer">
-    <img  v-for="image in imagesPath" :src="image" :key="image"/>
+    <img class="tbackground"  v-for="image in imagesPath" :src="image" :key="image"/>
   </div>
 </template>
 
@@ -32,8 +32,13 @@ export default {
       const subImages = $('.image-displayer img')
       for (let index = 0; index < subImages.length; index++) {
         $(subImages[index]).css({
-          'transform': `rotate(${(index % 6) * 4}deg)`
+          transform: `rotate(${index % 8 * -1}deg)`
         })
+        if (subImages.length - index > 5) {
+          $(subImages[index]).css({
+            'box-shadow': `none`
+          })
+        }
       }
     }
   }
@@ -41,20 +46,20 @@ export default {
 </script>
 
 <style lang="scss">
-
-.image-displayer{
+.image-displayer {
   display: flex;
   justify-content: center;
   align-items: center;
-  img{
-      display: block;
-      position: absolute;
-      margin: auto;
-      max-height: 180px;
-      max-width: 180px;
-      object-fit: cover;
-      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
-      transition-duration: .4s;
+  img {
+    display: block;
+    position: absolute;
+    margin: auto;
+    max-height: 180px;
+    max-width: 180px;
+    object-fit: cover;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+    transition-duration: 0.4s;
+    border-radius: 4px;
   }
   // .item-2{
   //   transform: rotate(8deg);
@@ -66,5 +71,4 @@ export default {
   position: relative;
   // margin-top: 16px;
 }
-
 </style>

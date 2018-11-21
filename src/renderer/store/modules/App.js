@@ -20,6 +20,7 @@ const state = {
   selectedImageIds: [],
   fileProcessQueueLength: 0,
   fileProcessedCount: 0,
+  fileProcessedArray: [],
   image2FolderMap: {},
   imageMap: {},
   tags: [],
@@ -47,12 +48,23 @@ const mutations = {
   SET_FILE_PROCESS_QUEUE_LENGTH (state, length) {
     state.fileProcessQueueLength = length
   },
-  INCREASE_FILE_PROCESSED_COUNT (state) {
+  INCREASE_FILE_PROCESSED_COUNT (state, image) {
     state.fileProcessedCount++
+    state.fileProcessedArray.push(image)
   },
   RESET_QUEUE_COUNT (state) {
     state.fileProcessQueueLength = 0
     state.fileProcessedCount = 0
+    // todo: auto append very 20
+    if (state.fileProcessedArray.length > 0) {
+      let cloned = state.images.concat(state.fileProcessedArray)
+      state.images = cloned
+      const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
+      state.filteredImages = sortImages(filteredImages, state.imageSortType)
+      refreshImage2FolderMap(state)
+      ImageBind(state)
+    }
+    state.fileProcessedArray = []
   },
   SET_SELECTED_IMAGE_IDS (state, ids) {
     state.backSelectImages = _.clone(state.selectedImageIds)
@@ -221,8 +233,7 @@ const sameStrArr = (arr1, arr2) => {
     return false
   }
   for (let index = 0; index < arr1.length; index++) {
-    const element = arr1[index]
-    if (arr2.indexOf(element) === -1) {
+    if (arr1[index] !== arr2[index]) {
       return false
     }
   }

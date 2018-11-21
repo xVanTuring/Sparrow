@@ -65,7 +65,10 @@ function createBackgroundProcess () {
     focusable: false,
     resizable: false,
     show: false,
-    parent: mainWindow
+    parent: mainWindow,
+    webPreferences: {
+      webSecurity: false
+    }
   })
   backgroundWindow.setMenu(null)
   backgroundWindow.loadURL(backgroundURL)

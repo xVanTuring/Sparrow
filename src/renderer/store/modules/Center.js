@@ -1,5 +1,5 @@
 const state = {
-  changingSortType: true
+  changingSortType: false
 }
 const mutations = {
   SET_SORT_TYPE (state, value) {

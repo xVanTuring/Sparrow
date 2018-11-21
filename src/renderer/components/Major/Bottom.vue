@@ -1,6 +1,6 @@
 <template>
   <div class="bottom-root">
-    <div class="progress">
+    <div class="progress progress-movement">
     </div>
     <div class="setting-wrapper">
       <img src="@/assets/svgs/gear-o.svg"/>
@@ -12,8 +12,8 @@
       <div class="sep"></div>
       <div class="info"> Format: {{selectedImageFotmat}}</div>
     </div>
-    <div class="bottom-info" v-if="fileProcessQueueLength!==0">
-        Processing: {{fileProcessedCount}}/{{fileProcessQueueLength}}
+    <div class="bottom-info progress-info">
+        {{fileProcessQueueLength===0?'Updating Index':`Processing: ${fileProcessedCount}/${fileProcessQueueLength}`}}
     </div>
   </div>
 </template>
@@ -57,20 +57,36 @@ export default {
   watch: {
     fileProcessedCount (newV) {
       if (this.fileProcessQueueLength !== 0 && this.fileProcessedCount !== 0) {
-        $('.progress').css({
-          width: (this.fileProcessedCount / this.fileProcessQueueLength * 100) + '%'
+        $('.progress-info').css({
+          visibility: 'visible'
         })
-        if (this.fileProcessQueueLength === this.fileProcessedCount) {
+        $('.progress-info').animate({
+          opacity: 1
+        }, 'fast', 'linear')
+        $('.progress').animate({
+          width: parseInt(this.fileProcessedCount / this.fileProcessQueueLength * 100) + '%',
+          opacity: 1
+        }, 'fast', 'linear')
+        if (this.fileProcessQueueLength <= this.fileProcessedCount) {
           setTimeout(() => {
             store.commit('RESET_QUEUE_COUNT')
-          }, 300)
+          }, 100)
         }
       } else {
-        setTimeout(() => {
-          $('.progress').css({
-            width: '0%'
+        $('.progress').animate({
+          opacity: 0
+        }, 200, 'linear', () => {
+          $('.progress').animate({
+            width: 0
+          }, 0)
+        })
+        $('.progress-info').animate({
+          opacity: 0
+        }, 200, 'linear', () => {
+          $('.progress-info').css({
+            visibility: 'collapse'
           })
-        }, 300)
+        })
       }
     }
   },
@@ -85,8 +101,7 @@ export default {
 </script>
 
 <style lang="scss">
-
-.bottom-root{
+.bottom-root {
   color: white;
   height: 40px;
   position: absolute;
@@ -98,15 +113,15 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  .progress{
+  .progress {
     width: 0%;
     height: 100%;
     background-color: rgb(49, 141, 226);
     position: absolute;
     left: 0;
-    transition: all .1s;
+    // transition: width .3s;
   }
-  .setting-wrapper{
+  .setting-wrapper {
     position: absolute;
     left: 4px;
     width: 26px;
@@ -115,22 +130,50 @@ export default {
     display: flex;
     justify-content: center;
     cursor: pointer;
-    &:hover{
+    &:hover {
       background-color: #404040;
-    } 
-    img{
+    }
+    img {
       display: block;
       width: 20px;
       // margin: auto;
     }
   }
-  .bottom-info{
+  .bottom-info {
     color: #c2c2c2;
     font-size: 80%;
     display: flex;
-    .sep{
+    &.progress-info {
+      z-index: 1000;
+      color: white;
+      visibility: collapse;
+    }
+    .sep {
       margin: 0 12px;
     }
   }
+}
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 60px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.progress-movement {
+  // vue blu
+  background-image: linear-gradient(
+    45deg,
+    hsla(0, 0%, 100%, 0.15) 25%,
+    transparent 0,
+    transparent 50%,
+    hsla(0, 0%, 100%, 0.15) 0,
+    hsla(0, 0%, 100%, 0.15) 75%,
+    transparent 0,
+    transparent
+  );
+  background-size: 60px 60px;
+  animation: progress-bar-stripes 1s linear infinite;
 }
 </style>
