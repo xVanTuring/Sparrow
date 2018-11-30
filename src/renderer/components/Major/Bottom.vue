@@ -10,7 +10,7 @@
       <div class="sep"></div>
       <div class="info"> Total: {{selectedImageSize}}</div>
       <div class="sep"></div>
-      <div class="info"> Format: {{selectedImageFotmat}}</div>
+      <div class="info"> Format: {{selectedImageFomat}}</div>
     </div>
     <div class="bottom-info progress-info">
         {{fileProcessQueueLength===0?'Updating Index':`Processing: ${fileProcessedCount}/${fileProcessQueueLength}`}}
@@ -20,7 +20,7 @@
 
 <script>
 import store from '@/store'
-import {ipcRenderer} from 'electron'
+import { ipcRenderer } from 'electron'
 export default {
   computed: {
     selectedImageIds () {
@@ -41,7 +41,7 @@ export default {
       }
       return (kbSize / 1024).toFixed(3) + ' MB'
     },
-    selectedImageFotmat () {
+    selectedImageFomat () {
       let formats = this.selectedImageItem.map((item) => {
         return item.ext.toUpperCase()
       })
@@ -59,44 +59,33 @@ export default {
     fileProcessedCount (newV) {
       if (this.fileProcessQueueLength !== 0 && this.fileProcessedCount !== 0) {
         $('.progress-info').css({
+          opacity: 1,
           visibility: 'visible'
         })
-        $('.progress-info').animate({
-          opacity: 1
-        }, 'fast', 'linear')
-        $('.progress').animate({
+        $('.progress').css({
           width: parseInt(this.fileProcessedCount / this.fileProcessQueueLength * 100) + '%',
           opacity: 1
-        }, 'fast', 'linear')
+        })
         if (this.fileProcessQueueLength <= this.fileProcessedCount) {
           setTimeout(() => {
             store.commit('RESET_QUEUE_COUNT')
             ipcRenderer.send('bg-start-pattle')
-          }, 100)
+          }, 300)
         }
       } else {
-        $('.progress').animate({
+        $('.progress').css({
           opacity: 0
-        }, 200, 'linear', () => {
-          $('.progress').animate({
+        })
+        $('.progress-info').css({
+          opacity: 0,
+          visibility: 'collapse'
+        })
+        setTimeout(() => {
+          $('.progress').css({
             width: 0
-          }, 0)
-        })
-        $('.progress-info').animate({
-          opacity: 0
-        }, 200, 'linear', () => {
-          $('.progress-info').css({
-            visibility: 'collapse'
           })
-        })
+        }, 300)
       }
-    }
-  },
-  mounted () {
-    if (this.fileProcessQueueLength !== 0 && this.fileProcessedCount !== 0) {
-      $('.progress').css({
-        width: (this.fileProcessedCount / this.fileProcessQueueLength * 100) + '%'
-      })
     }
   }
 }
@@ -121,7 +110,7 @@ export default {
     background-color: rgb(49, 141, 226);
     position: absolute;
     left: 0;
-    // transition: width .3s;
+    transition: width .2s, opacity .3s;
   }
   .setting-wrapper {
     position: absolute;
