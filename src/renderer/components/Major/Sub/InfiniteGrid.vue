@@ -62,7 +62,7 @@ export default {
   methods: {
     resize (number) {
       this.layout.options.itemSize = parseInt(number)
-      document.getElementById('griditem').innerHTML = `
+      document.getElementById('grid-item').innerHTML = `
             .item {
                 width: ${parseInt(number)}px;
             }
@@ -111,8 +111,6 @@ export default {
       this.layout = new GridLayout({
         align: 'center',
         margin: 16
-        // minSize: 110
-        // maxSize: 100
       })
       this.ig.setLayout(this.layout)
       this.ig.on({
@@ -255,6 +253,8 @@ export default {
 	margin: auto;
   margin-top: 8px;
   pointer-events: none;
+  height: 100%;
+
 }
 .tbackground {
     background-position: 0 0, 10px 10px !important;

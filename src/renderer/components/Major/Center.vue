@@ -37,12 +37,10 @@
           <input :class="{keep:filterWord!==''}" v-model="filterWord" />
           <div class="search-in-input"></div>
         </div>
-
       </div>
-
     </div>
 
-    <div class="container" id="container" @dragleave="dragleave($event)" @dragenter="dragenter($event)" @dragover="allowDrop($event)" @drop="drop($event)">
+    <div class="container eg-container" @dragleave="dragleave($event)" @dragenter="dragenter($event)" @dragover="allowDrop($event)" @drop="drop($event)">
       <div class="type-folders" v-if="subFolders.length>0">
         Sub Folders ({{subFolders.length}})
         <div class="sub-folders">
@@ -58,7 +56,7 @@
     </div>
       <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
         <div v-if="fileDragOver" class="tip">
-          Drop To Add Image(s)
+          Drop to add
         </div>
       </div>
   </div>
@@ -71,7 +69,6 @@ import InfiniteGrid from './Sub/InfiniteGrid'
 import GallyeryFolder from './Sub/GallyeryFolder'
 import store from '@/store'
 import * as utils from '@/utils'
-// import * as constants from '@/utils/constants'
 import { ipcRenderer } from 'electron'
 import _ from 'lodash'
 export default {
@@ -554,18 +551,7 @@ export default {
   width: calc(100%);
   background-color: #2d2d2d;
   overflow: auto;
-  overflow-x: hidden;
   margin: auto;
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-    background-color: rgba(94, 94, 94, 0.24);
-    &:hover {
-      background-color: rgb(80, 80, 80);
-    }
-  }
   .type-images,
   .type-folders {
     color: rgb(211, 211, 211);
@@ -593,6 +579,16 @@ export default {
     &.visible {
       background-color: rgba(rgb(49, 141, 226), 0.35);
       border: 1px solid rgb(49, 141, 226);
+    }
+  }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgba(94, 94, 94, 0.24);
+    &:hover {
+      background-color: rgb(80, 80, 80);
     }
   }
 }
