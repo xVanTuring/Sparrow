@@ -2,6 +2,7 @@
 
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
+const isDebug = true
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -31,7 +32,7 @@ function createWindow () {
     backgroundColor: '#353535',
     icon: path.join(__static, './icons/png/64x64.png'),
     webPreferences: {
-      webSecurity: false
+      webSecurity: !isDebug
     }
   })
   mainWindow.setMenu(null)
@@ -87,6 +88,7 @@ app.on('activate', () => {
   }
 })
 
+// #region updater
 /**
  * Auto Updater
  *
@@ -106,8 +108,9 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
  */
+// #endregion
 
-// IPC
+// #region IPC
 ipcMain.on('ui-create-library', (event, args) => {
   mainWindow.webContents.send('ui-create-library', args)
 })
@@ -130,9 +133,13 @@ ipcMain.on('bg-save-library-config', (event, args) => {
 ipcMain.on('bg-update-images', (event, args) => {
   backgroundWindow.webContents.send('bg-update-images', args)
 })
+ipcMain.on('bg-start-pattle', () => {
+  backgroundWindow.webContents.send('bg-start-pattle')
+})
 ipcMain.on('ui-update-image', (event, meta) => {
   mainWindow.webContents.send('ui-update-image', meta)
 })
 ipcMain.on('ui-image-loaded', (event, args) => {
   mainWindow.webContents.send('ui-image-loaded', args)
 })
+// #endregion

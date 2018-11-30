@@ -5,7 +5,6 @@ process.env.BABEL_ENV = 'renderer'
 const path = require('path')
 const { dependencies } = require('../package.json')
 const webpack = require('webpack')
-
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -19,8 +18,7 @@ const { VueLoaderPlugin } = require('vue-loader')
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
  */
-let whiteListedModules = ['vue']
-
+let whiteListedModules = ['vue','vue-draggable-nested-tree','vue-slider-component','vue-perfect-scrollbar','vue2-scrollbar','vuedraggable','vue-toasted']
 let rendererConfig = {
   devtool: '#cheap-module-eval-source-map',
   entry: {
@@ -28,7 +26,7 @@ let rendererConfig = {
     background: path.join(__dirname, '../src/renderer/background.js'),
   },
   externals: [
-    // ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
+    ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
   ],
   module: {
     rules: [

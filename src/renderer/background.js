@@ -13,18 +13,17 @@ import settings from 'electron-settings'
 import tokenSource from 'cancellation'
 // import _ from 'lodash'
 import sizeOf from 'image-size'
-import bluebird from 'bluebird'
 // import palette from 'image-palette2'
 import * as utils from '@/utils'
 import randomId from './background/randomId'
+import sharp from 'sharp'
 // https://github.com/aheckmann/gm/issues/754
-// var sharp = require('sharp')
 const gm = require('gm').subClass({
-  appPath: 'E:\\App\\GraphicsMagick-1.3.30-Q16\\'
+  appPath: 'C:\\Program Files\\ImageMagick-7.0.8-Q16\\',
+  imageMagick: true
 })
 var palette = require('image-palette')
 var pixels = require('image-pixels')
-bluebird.promisifyAll(gm.prototype)
 const appVersion = remote.app.getVersion()
 const taskTokens = []
 console.log('Sparrow: ', appVersion)
@@ -66,6 +65,7 @@ function ErrorHandler (err, data, callback) {
 
 const processPalette = (task, callback) => {
   let { id, width, height, name, ext } = task
+  console.log(`START processPalette: id=${id} width=${width} height=${height} name=${name}`)
   if (ext === 'svg') {
     // callback()
     // auto generate temp stream
@@ -90,7 +90,7 @@ const processPalette = (task, callback) => {
             ratio: amount[index] * 100
           }
         })
-        imageMetaWriteQueue.push(
+        imageMetaWriteQueue.unshift(
           {
             image: {
               id: id,
@@ -100,6 +100,7 @@ const processPalette = (task, callback) => {
           },
           (err, meta) => {
             ErrorHandler(err)
+            console.log(`DONE processPalette: id=${id}`)
             if (!err) {
               ipcRenderer.send('ui-update-image', meta)
             }
@@ -465,7 +466,7 @@ const thumbSize = 620
  * @param {(err,image)=>void} callback
  */
 function processImage (image, cancelToken, callback) {
-  // mkdir dir
+  // if(cancelToken)
   let id = randomId()
   let imageDir = path.join(library.imagesDir, id + '.image')
   let thumbPath = path.join(
@@ -495,16 +496,6 @@ function processImage (image, cancelToken, callback) {
   }
   fse.mkdirSync(imageDir)
   fse.copySync(image.path, imageTargetPath)
-  gm(imageTargetPath)
-    .resize(thumbSize)
-    .write(thumbPath, (err) => {
-      if (err) {
-        callback(err)
-      } else {
-        ipcRenderer.send('ui-image-loaded', imageMeta)
-        callback()
-      }
-    })
   imageMetaWriteQueue.push(
     {
       image: imageMeta
@@ -513,19 +504,31 @@ function processImage (image, cancelToken, callback) {
       if (err) {
         ErrorHandler(err)
       } else {
-        console.log(`ID: ${imageMeta.id}, Meta Write Done`)
+        console.log(`ID: ${imageMeta.id}, Meta File Write Done`)
       }
     }
   )
-  // sharp(imageTargetPath)
-  //   .resize(thumbSize, null)
-  //   .png()
-  //   .toFile(thumbPath, (err, info) => {
+  sharp(imageTargetPath)
+    .resize(thumbSize)
+    .png()
+    .toFile(thumbPath, (err, info) => {
+      if (err) {
+        callback(err)
+      } else {
+        ipcRenderer.send('ui-image-loaded', imageMeta)
+        paletteQueue.push(imageMeta)
+        paletteQueue.pause()
+        callback()
+      }
+    })
+  // gm(imageTargetPath)
+  //   .resize(thumbSize)
+  //   .write(thumbPath, (err) => {
   //     if (err) {
-  //       callback()
+  //       callback(err)
   //     } else {
   //       ipcRenderer.send('ui-image-loaded', imageMeta)
-
+  //       callback()
   //     }
   //   })
 }
@@ -598,5 +601,18 @@ ipcRenderer.on('bg-update-images', (event, images) => {
       }
     )
   })
+})
+ipcRenderer.on('bg-start-pattle', () => {
+  console.log('IPC-BACKGROUND', 'bg-start-pattle')
+  if (paletteQueue) {
+    console.log(`paletteQueue.Length ${paletteQueue.length()}`)
+    paletteQueue.resume()
+  }
+})
+ipcRenderer.on('bg-pause-pattle', () => {
+  console.log('IPC-BACKGROUND', 'bg-pause-pattle')
+  if (paletteQueue) {
+    paletteQueue.pause()
+  }
 })
 // endregion

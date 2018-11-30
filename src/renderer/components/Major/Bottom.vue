@@ -20,6 +20,7 @@
 
 <script>
 import store from '@/store'
+import {ipcRenderer} from 'electron'
 export default {
   computed: {
     selectedImageIds () {
@@ -70,6 +71,7 @@ export default {
         if (this.fileProcessQueueLength <= this.fileProcessedCount) {
           setTimeout(() => {
             store.commit('RESET_QUEUE_COUNT')
+            ipcRenderer.send('bg-start-pattle')
           }, 100)
         }
       } else {

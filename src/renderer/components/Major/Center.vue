@@ -55,12 +55,12 @@
       <InfiniteGrid ref="infinitegrid" v-if="filteredImages.length > 0" :list="filteredImages" :itemSize="itemSize" :selected="selected"></InfiniteGrid>
       <EmptyFolder v-if="imageCount===0 && (subFolders.length===0)" :type="filterWord.length===0?0:1"/>
       <!-- fileDragOver -->
-      <div class="drop-file-mask" :class="{'file-drag-over':true}">
+    </div>
+      <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
         <div v-if="fileDragOver" class="tip">
           Drop To Add Image(s)
         </div>
       </div>
-    </div>
   </div>
 </template>
 <script>
@@ -605,11 +605,11 @@ export default {
   pointer-events: none;
   position: absolute;
   left: 0;
-  top: 0;
+  top: 40px;
   background-color: transparent;
   box-sizing: border-box;
   border: 1px solid transparent;
-  height: calc(100% - 1px);
+  height: calc(100% - 41px);
   width: calc(100% - 1px);
   display: flex;
   align-items: center;

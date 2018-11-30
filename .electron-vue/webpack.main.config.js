@@ -33,10 +33,10 @@ let mainConfig = {
         use: 'babel-loader',
         exclude: /node_modules/
       },
-      {
-        test: /\.node$/,
-        use: 'node-loader'
-      }
+      // {
+      //   test: /\.node$/,
+      //   use: 'node-loader'
+      // }
     ]
   },
   node: {

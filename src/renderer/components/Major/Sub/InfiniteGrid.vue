@@ -105,7 +105,7 @@ export default {
       this.ig = new InfiniteGrid(this.$el, {
         useRecycle: true,
         transitionDuration: 0.2,
-        threshold: 1000,
+        threshold: 300,
         isOverflowScroll: false
       })
       this.layout = new GridLayout({

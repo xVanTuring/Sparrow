@@ -68,6 +68,7 @@
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
     "sharp": "^0.21.0",
+    "spawn-sync": "^2.0.0",
     "tiny-pinyin": "^1.3.0",
     "tree-helper": "^1.0.5",
     "uuid": "^3.3.2",
@@ -99,10 +100,11 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^2.0.4",
+    "electron": "^3.0.10",
     "electron-builder": "^20.19.2",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
+    "electron-rebuild": "^1.8.2",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",
@@ -131,6 +133,5 @@
     "webpack-dev-server": "^3.1.4",
     "webpack-hot-middleware": "^2.22.2",
     "webpack-merge": "^4.1.3"
-  },
-  "__npminstall_done": false
+  }
 }
