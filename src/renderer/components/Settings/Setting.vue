@@ -11,7 +11,7 @@
 export default {
   methods: {
     maskClick () {
-    //   store.commit('SET_DESIPLAY_SETTING', false)
+    //   store.commit('SET_DISPLAY_SETTING', false)
     }
   }
 }

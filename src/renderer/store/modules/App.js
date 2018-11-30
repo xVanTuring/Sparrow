@@ -141,7 +141,7 @@ const mutations = {
   SET_IMAGE_DRAGGING (state, dragging) {
     state.ImageDragging = dragging
   },
-  SET_DESIPLAY_SETTING (state, bool) {
+  SET_DISPLAY_SETTING (state, bool) {
     state.displaySetting = bool
   },
   SET_IMAGE_SORT_TYPE (state, value) {
@@ -169,17 +169,17 @@ const actions = {
   toKorea ({ commit }) {
     commit('SET_LANGUAGE', 'kr')
   },
-  setMajorColor (contex, color) {
-    contex.commit('SET_MAJOR_COLOR', color)
+  setMajorColor (context, color) {
+    context.commit('SET_MAJOR_COLOR', color)
   },
-  setZoomLevel (contex, zoomLevel) {
-    contex.commit('SET_ZOOM_LEVEL', zoomLevel)
+  setZoomLevel (context, zoomLevel) {
+    context.commit('SET_ZOOM_LEVEL', zoomLevel)
   },
-  setCtrlStatus (contex, ctrl) {
-    contex.commit('SET_CTRL_STATUS', ctrl)
+  setCtrlStatus (context, ctrl) {
+    context.commit('SET_CTRL_STATUS', ctrl)
   },
-  setSelectedFolder (contex, id) {
-    contex.commit('SET_SELECTED_FOLDER', id)
+  setSelectedFolder (context, id) {
+    context.commit('SET_SELECTED_FOLDER', id)
   }
 }
 export default {
