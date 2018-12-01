@@ -10,7 +10,7 @@
 import Left from './Left/Left'
 import Center from './Center/Center'
 import Right from './Right/Right'
-import Bottom from './Bottom'
+import Bottom from './Bottom/Bottom'
 export default {
   components: {
     Left,

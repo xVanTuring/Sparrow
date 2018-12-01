@@ -2,7 +2,7 @@
 <div id="welcome">
   <transition name="opacity-trans">
     <div v-if="createLibrary" id="close">
-      <img src="@/assets/close-2.svg" />
+      <img src="@/assets/svgs/close-2.svg" />
     </div>
   </transition>
   <!-- TODO: use svg and animation -->
@@ -61,7 +61,7 @@
             @mousedown="toggleClickState(false,true)" @mouseup="toggleClickState(false,false)" @mouseout="toggleClickState(false,false)"
             @click="next" 
             :class="{'next-wrapper':true,clicked:nextClicking,disabled:pathIlleagle||nameIlleagle||wrongExistLibrary}">
-            <img class="next-btn" src="@/assets/icon-next.svg" />
+            <img class="next-btn" src="@/assets/svgs/icon-next.svg" />
             <div class="btn-mask"></div>
           </div>
         </div>
