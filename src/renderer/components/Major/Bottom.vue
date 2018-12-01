@@ -69,7 +69,7 @@ export default {
         if (this.fileProcessQueueLength <= this.fileProcessedCount) {
           setTimeout(() => {
             store.commit('RESET_QUEUE_COUNT')
-            // ipcRenderer.send('bg-start-palette')
+            ipcRenderer.send('bg-start-palette')
           }, 300)
         }
       } else {

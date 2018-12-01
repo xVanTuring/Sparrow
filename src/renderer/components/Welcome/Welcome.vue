@@ -76,8 +76,8 @@
 <script>
 // TODO: if open exists library background will display the imgs
 // TODO: custom label content
-import CountrySelection from '@/components/Welcome/CountrySelection'
-import IconImport from '../Major/Sub/IconImport'
+import CountrySelection from './CountrySelection'
+import IconImport from '../Major/Icons/IconImport'
 import os from 'os'
 import path from 'path'
 import fs from 'fs'

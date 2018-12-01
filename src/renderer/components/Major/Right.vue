@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import IconClose from './Sub/IconClose'
+import IconClose from './Icons/IconClose'
 import store from '../../store'
 import RightImage from './Sub/RightImage'
 import RightFolder from './Sub/RightFolder'

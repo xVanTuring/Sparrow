@@ -43,8 +43,8 @@
 <script>
 import FolderItem from './Sub/FolderItem'
 import Traffic from './Sub/Traffic'
-import IconAdd from './Sub/IconAdd'
-import IconImport from './Sub/IconImport'
+import IconAdd from './Icons/IconAdd'
+import IconImport from './Icons/IconImport'
 import _ from 'lodash'
 import uuid from 'uuid/v4'
 import store from '@/store'

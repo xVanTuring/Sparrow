@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import IconFolder from './IconFolder'
+import IconFolder from '../Icons/IconFolder'
 import { fixedFolderID } from '@/utils/constants'
 import { ipcRenderer } from 'electron'
 import store from '@/store'
