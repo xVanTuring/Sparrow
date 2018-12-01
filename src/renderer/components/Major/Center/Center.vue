@@ -63,10 +63,10 @@
 </template>
 <script>
 import vueSlider from 'vue-slider-component'
-import ImageItem from './Sub/ImageItem'
-import EmptyFolder from './Sub/EmptyFolder'
-import InfiniteGrid from './Sub/InfiniteGrid'
-import GallyeryFolder from './Sub/GallyeryFolder'
+import ImageItem from './ImageItem'
+import EmptyFolder from './EmptyFolder'
+import InfiniteGrid from './InfiniteGrid'
+import GallyeryFolder from './GallyeryFolder'
 import store from '@/store'
 import * as utils from '@/utils'
 import { ipcRenderer } from 'electron'

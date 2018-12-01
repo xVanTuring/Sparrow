@@ -16,10 +16,10 @@
 </template>
 
 <script>
-import IconClose from './Icons/IconClose'
-import store from '../../store'
-import RightImage from './Sub/RightImage'
-import RightFolder from './Sub/RightFolder'
+import IconClose from '@/components/Major/Icons/IconClose'
+import store from '@/store'
+import RightImage from './RightImage'
+import RightFolder from './RightFolder'
 import { mapState } from 'vuex'
 export default {
   components: {

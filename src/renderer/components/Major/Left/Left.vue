@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import FolderItem from './Sub/FolderItem'
-import Traffic from './Sub/Traffic'
-import IconAdd from './Icons/IconAdd'
-import IconImport from './Icons/IconImport'
+import FolderItem from './FolderItem'
+import Traffic from './Traffic'
+import IconAdd from '@/components/Major/Icons/IconAdd'
+import IconImport from '@/components/Major/Icons/IconImport'
 import _ from 'lodash'
 import uuid from 'uuid/v4'
 import store from '@/store'

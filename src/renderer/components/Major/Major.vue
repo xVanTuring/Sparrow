@@ -7,9 +7,9 @@
   </div>
 </template>
 <script>
-import Left from './Left'
-import Center from './Center'
-import Right from './Right'
+import Left from './Left/Left'
+import Center from './Center/Center'
+import Right from './Right/Right'
 import Bottom from './Bottom'
 export default {
   components: {

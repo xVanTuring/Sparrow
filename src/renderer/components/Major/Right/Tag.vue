@@ -11,9 +11,9 @@
 
 <script>
 // MaxLength
-import IconClose from '../Icons/IconClose'
-import IconAdd from '../Icons/IconAdd'
-import IconCheck from '../Icons/IconCheck'
+import IconClose from '@/components/Major/Icons/IconClose'
+import IconAdd from '@/components/Major/Icons/IconAdd'
+import IconCheck from '@/components/Major/Icons/IconCheck'
 const TAG_PREFIX = '$$Create$$'
 export default {
   components: {

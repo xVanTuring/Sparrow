@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import store from '../../../store'
+import store from '@/store'
 import * as constants from '@/utils/constants'
 export default {
   methods: {
