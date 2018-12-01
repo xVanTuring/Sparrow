@@ -33,7 +33,7 @@
               @blur="togglePathDisplay" />
             <div class="select-path-wrapper" @click="pathClick" @mousedown="toggleClickState(true,true)" @mouseup="toggleClickState(true,false)"
               @mouseout="toggleClickState(true,false)" v-bind:class="{clicked:openClicking}">
-              <img class="select-path" src="@/assets/folder.svg" />
+              <img class="select-path" src="@/assets/svgs/folder.svg" />
               <div class="btn-mask"></div>
             </div>
           </div>

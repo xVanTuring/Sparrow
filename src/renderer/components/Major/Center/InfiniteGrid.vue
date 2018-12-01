@@ -167,7 +167,6 @@ export default {
         this.ig.layout(false)
       })
     }
-
   },
   created () {
     this.$bus.$on('remove-item', this.removeItem)

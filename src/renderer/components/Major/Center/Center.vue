@@ -202,7 +202,7 @@ export default {
           'height': this.selectRect.height + 'px'
         }).addClass('visible').show()
         let oTop = document.getElementsByClassName('vue-infinite-grid')[0].offsetTop
-        var items = ig.getItems()
+        var items = ig.getItems(true)
         var sLeft = this.selectRect.x
         var sTop = this.selectRect.y
         var sBottom = this.selectRect.height + sTop
