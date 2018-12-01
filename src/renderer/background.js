@@ -602,8 +602,8 @@ ipcRenderer.on('bg-update-images', (event, images) => {
     )
   })
 })
-ipcRenderer.on('bg-start-pattle', () => {
-  console.log('IPC-BACKGROUND', 'bg-start-pattle')
+ipcRenderer.on('bg-start-palette', () => {
+  console.log('IPC-BACKGROUND', 'bg-start-palette')
   if (paletteQueue) {
     console.log(`paletteQueue.Length ${paletteQueue.length()}`)
     paletteQueue.resume()

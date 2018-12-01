@@ -133,8 +133,8 @@ ipcMain.on('bg-save-library-config', (event, args) => {
 ipcMain.on('bg-update-images', (event, args) => {
   backgroundWindow.webContents.send('bg-update-images', args)
 })
-ipcMain.on('bg-start-pattle', () => {
-  backgroundWindow.webContents.send('bg-start-pattle')
+ipcMain.on('bg-start-palette', () => {
+  backgroundWindow.webContents.send('bg-start-palette')
 })
 ipcMain.on('ui-update-image', (event, meta) => {
   mainWindow.webContents.send('ui-update-image', meta)
