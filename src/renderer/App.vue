@@ -40,19 +40,15 @@ ipcRenderer.on('ui-library-loaded', (events, args) => {
     remote.getCurrentWindow().setSize(1320, 780, true)
     remote.getCurrentWindow().focus()
     remote.getCurrentWindow().center()
+    ipcRenderer.send('bg-start-palette')
   }, 100)
 })
-// const addImageToVuex = _.throttle(function () {
-
-// })
 ipcRenderer.on('ui-image-loaded', (event, args) => {
-  // store.commit('ADD_IMAGE', args)
   store.commit('INCREASE_FILE_PROCESSED_COUNT', args)
 })
 
 ipcRenderer.on('ui-update-image', (event, meta) => {
   store.commit('UPDATE_IMAGE', meta)
-  // notify
   const id = '#item-' + meta.id
   const title = id + ' .title'
   const q = $(title)

@@ -22,8 +22,8 @@ const gm = require('gm').subClass({
   appPath: 'C:\\Program Files\\ImageMagick-7.0.8-Q16\\',
   imageMagick: true
 })
-var palette = require('image-palette')
-var pixels = require('image-pixels')
+let palette = require('image-palette')
+let pixels = require('image-pixels')
 const appVersion = remote.app.getVersion()
 const taskTokens = []
 console.log('Sparrow: ', appVersion)
@@ -311,9 +311,9 @@ function initLibrary () {
   // check if we have one library if not notify the GUI
   const rootDir = settings.get('rootDir', '')
   if (rootDir === '') {
+    // TODO : path exists
     ipcRenderer.send('ui-create-library')
     return
-    // notify GUI
   }
   // make sure we have library.jon
   let metaPath = path.join(rootDir, 'library.json')
@@ -324,27 +324,29 @@ function initLibrary () {
       'Config File Missed',
       'You Need To Create A New Library'
     )
-    ErrorHandler('')
+    ErrorHandler(new Error('Config File Missed'))
+    ipcRenderer.send('ui-create-library')
     return
   }
   // generate images folder in case user deletes all images
   if (!fs.existsSync(path.join(rootDir, 'images'))) {
     fs.mkdirSync(path.join(rootDir, 'images'))
   }
-  // TODO: remove loadlibrary
+  // TODO: remove load library
   library = loadLibrary(metaPath)
   // if metadata broken
   if (!library) {
     return
   }
   // for watchers and operations
-  library.rootDir = path.join(rootDir)
+  library.rootDir = rootDir // path.join(rootDir)
   library.imagesDir = path.join(rootDir, 'images')
   // load images
   loadImages((err, images) => {
     if (err) {
       ErrorHandler(err)
     } else {
+      console.log(images.length)
       ipcRenderer.send('ui-library-loaded', {
         libraryDir: library.rootDir,
         folders: library.folders,
@@ -392,7 +394,7 @@ function initLibrary () {
 function loadLibrary (libraryMetaPath) {
   try {
     if (!fs.existsSync(libraryMetaPath)) {
-      ErrorHandler('Library.json Lost')
+      ErrorHandler(new Error('Library.json Lost'))
       return
     }
     let metaData = fs.readFileSync(libraryMetaPath)
@@ -411,53 +413,52 @@ function loadLibrary (libraryMetaPath) {
  * read images-dir -> open all metadata.json
  * @param {(err,images:[])=>void} callback
  */
-function loadImages (callback) {
-  fse
-    .readdir(library.imagesDir)
-    .then(files => {
-      let imageIds = []
-      library.imageMetadatas = []
-
-      files.forEach(item => {
-        //  macOS
-        if (item === '.DS_STORE') {
-          return
-        }
-        let id = item.replace('.image', '')
-        // TODO: check id
-        imageIds.push(id)
-        library.imageMetadatas.push(
-          path.join(library.imagesDir, item, 'metadata.json')
-        )
-      })
-      // notify ui loading length
-      let parallList = library.imageMetadatas.map(file => {
-        return callback => {
-          fse.readFile(file, (err, result) => {
-            // Notify UI
-            if (err) {
-              callback(err)
-            } else {
-              try {
-                callback(null, JSON.parse(result))
-              } catch (err) {
-                callback(err)
-              }
-            }
-          })
-        }
-      })
-      async.parallelLimit(parallList, 20, (err, result) => {
-        if (err) {
-          callback(err)
-        } else {
-          callback(null, result)
-        }
-      })
+async function loadImages (callback) {
+  try {
+    let files = await fse.readdir(library.imagesDir)
+    let imagePaths = []
+    files.forEach(item => {
+      if (item === '.DS_STORE') {
+        return
+      }
+      let metaPath = path.join(library.imagesDir, item, 'metadata.json')
+      imagePaths.push(metaPath)
     })
-    .catch(ErrorHandler)
+    let parallelList = imagePaths.map(file => {
+      return callback => {
+        try {
+          if (fse.existsSync(file)) {
+            // TODO: check image files existence
+            let result = fse.readFileSync(file)
+            let parsed = JSON.parse(result)
+            if (!parsed['palettes']) {
+              // todo add to palette
+              paletteQueue.push(parsed)
+              paletteQueue.pause()
+            }
+            callback(undefined, parsed)
+          } else {
+            // TODO: report
+            callback(undefined)
+          }
+          // palettes
+        } catch (error) {
+          callback(error)
+        }
+      }
+    })
+    async.parallelLimit(parallelList, 16, (err, result) => {
+      if (err) {
+        callback(err)
+      } else {
+        let filtered = result.filter(i => !!i)
+        callback(undefined, filtered)
+      }
+    })
+  } catch (err) {
+    ErrorHandler(err)
+  }
 }
-initLibrary()
 const thumbSize = 620
 /**
  *
@@ -533,7 +534,8 @@ function processImage (image, cancelToken, callback) {
   //   })
 }
 
-// region IPC
+initLibrary()
+// #region IPC
 ipcRenderer.on('bg-create-library', (event, args) => {
   let libPath = args[0]
   let libName = args[1]
@@ -609,10 +611,13 @@ ipcRenderer.on('bg-start-palette', () => {
     paletteQueue.resume()
   }
 })
-ipcRenderer.on('bg-pause-pattle', () => {
-  console.log('IPC-BACKGROUND', 'bg-pause-pattle')
+ipcRenderer.on('bg-pause-palette', () => {
+  console.log('IPC-BACKGROUND', 'bg-pause-palette')
   if (paletteQueue) {
     paletteQueue.pause()
   }
 })
-// endregion
+ipcRenderer.on('bg-auto-fix-palette', () => {
+
+})
+// #endregion

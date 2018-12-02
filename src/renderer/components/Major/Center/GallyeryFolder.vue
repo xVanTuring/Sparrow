@@ -62,7 +62,7 @@ export default {
     folderImagesURL () {
       return this.folderImages.map((item) => {
         let imageName = (item.width > 620 && item.height > 620) ? item.name + '_thumb.png' : item.name + '.' + item.ext
-        var _path = 'file://' + path.join(store.state.App.libraryPath, 'images', item.id + '.image', imageName)
+        let _path = 'file://' + path.join(store.state.App.libraryPath, 'images', item.id + '.image', imageName)
         return _path
       })
     },

@@ -26,6 +26,6 @@ export const commonFolder = [
   'Love'
 ]
 export function choose (choices) {
-  var index = Math.floor(Math.random() * choices.length)
+  let index = Math.floor(Math.random() * choices.length)
   return choices[index]
 }

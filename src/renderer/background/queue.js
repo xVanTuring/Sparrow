@@ -20,8 +20,8 @@ import { processImage } from './processImage'
 export const gm = require('gm').subClass({
   appPath: 'E:\\App\\GraphicsMagick-1.3.30-Q16\\'
 })
-var palette = require('image-palette')
-var pixels = require('image-pixels')
+let palette = require('image-palette')
+let pixels = require('image-pixels')
 bluebird.promisifyAll(gm.prototype)
 const appVersion = remote.app.getVersion()
 const taskTokens = []
@@ -73,7 +73,7 @@ const paletteTask = async (task) => {
     if (width > thumbSize && height > thumbSize) {
       finalPath = thumbPath
     }
-    var { amount, colors } = palette(await pixels(finalPath))
+    let { amount, colors } = palette(await pixels(finalPath))
     if (colors) {
       if (fs.existsSync(configFilePath)) {
         imageMetaWriteQueue.push({

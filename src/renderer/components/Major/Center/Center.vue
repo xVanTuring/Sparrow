@@ -97,7 +97,8 @@ export default {
       selectRect: {},
       // selected: [],
       dragEnterCounter: 0,
-      subFolders: []
+      subFolders: [],
+      selectedMap: {}
     }
   },
   methods: {
@@ -157,7 +158,16 @@ export default {
       }
     },
     mousedown (e) {
-      if ($(e.target).is('.container') && this.imageCount > 0) {
+      if (!this.moving && $(e.target).is('.container') && this.imageCount > 0) {
+        // scrollbar detect
+        console.log(e.clientX)
+        console.log(e.target.clientWidth)
+        if (e.clientX > e.target.clientWidth + 230) { // left-panel width
+          console.log('On the scrollbar')
+          return
+        }
+        // console.log(e.target.offsetWidth)
+        // console.log(e.target.clientWidth)
         store.commit('SET_SELECTED_SUB_FOLDER', '')
         this.moving = true
         this.startX = e.offsetX
@@ -170,12 +180,11 @@ export default {
         }
       }
     },
-    mousemove (e) {
+    mousemove (eve) {
       if (this.moving) {
-        let ig = this.$refs.infinitegrid.ig
         let offset = $('.container').offset()
-        let endX = e.pageX - offset.left
-        let endY = e.pageY - offset.top + $('.container').scrollTop()
+        let endX = eve.pageX - offset.left
+        let endY = eve.pageY - offset.top + $('.container').scrollTop()
         let flipX = this.startX > endX
         let flipY = this.startY > endY
         if (flipX) {
@@ -201,61 +210,33 @@ export default {
           'width': this.selectRect.width + 'px',
           'height': this.selectRect.height + 'px'
         }).addClass('visible').show()
-        let oTop = document.getElementsByClassName('vue-infinite-grid')[0].offsetTop
-        var items = ig.getItems(true)
-        var sLeft = this.selectRect.x
-        var sTop = this.selectRect.y
-        var sBottom = this.selectRect.height + sTop
-        var sRight = this.selectRect.width + sLeft
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i]
-          var top = item.rect.top + oTop
-          var left = item.rect.left
-          var right = left + item.size.width
-          var bottom = top + item.size.height
-
-          var selected = !(
-            sTop > bottom ||
-            sBottom < top ||
-            sLeft > right ||
-            sRight < left)
-          if (e.shiftKey) {
-            var id = item.el.id.replace('item-', '')
-            if (selected) {
-              this.shiftSelected.push(id)
-            }
-          } else {
-            if (selected) {
-              $(item.el).addClass('selected')
-            } else {
-              $(item.el).removeClass('selected')
-            }
-          }
-        }
+        this.check(eve)
       }
     },
     mouseup () {
-      if (this.moving) {
-        this.moving = false
-        this.selectRect.width = 0
-        this.selectRect.height = 0
-        this.selectRect.x = 0
-        this.selectRect.y = 0
-        this.startX = 0
-        this.startY = 0
-        $('.container .mask').remove()
-        let ig = this.$refs.infinitegrid.ig
-        var items = ig.getItems()
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i]
-          if ($(item.el).hasClass('selected')) {
-            var id = item.el.id.replace('item-', '')
-            const cloned = _.clone(this.selected)
-            cloned.push(id)
-            this.selected = cloned
+      if (!this.moving) {
+        return
+      }
+      this.moving = false
+      this.selectRect.width = 0
+      this.selectRect.height = 0
+      this.selectRect.x = 0
+      this.selectRect.y = 0
+      this.startX = 0
+      this.startY = 0
+      $('.container .mask').remove()
+      setTimeout(() => {
+        // let ig = this.$refs.infinitegrid.ig
+        // let items = ig.getItems(true)
+        const cloned = _.clone(this.selected)
+        for (let key of Object.keys(this.selectedMap)) {
+          if (this.selectedMap[key]) {
+            cloned.push(key)
           }
         }
-      }
+        this.selectedMap = {}
+        this.selected = cloned
+      }, 200)
     },
     itemClick (event) {
       event.stopPropagation()
@@ -331,7 +312,50 @@ export default {
     },
     orderClick () {
       store.commit('SET_SORT_TYPE', !this.changingSortType)
-    }
+    },
+    check: _.throttle(function (e) {
+      if (!this.moving) {
+        return
+      }
+      let ig = this.$refs.infinitegrid.ig
+      let oTop = document.getElementsByClassName('vue-infinite-grid')[0].offsetTop
+      let items = ig.getItems(true)
+      let sLeft = this.selectRect.x
+      let sTop = this.selectRect.y
+      let sBottom = this.selectRect.height + sTop
+      let sRight = this.selectRect.width + sLeft
+      for (let i = 0; i < items.length; i++) {
+        let item = items[i]
+        if (!item || !item.el) {
+          continue
+        }
+        let top = item.rect.top + oTop
+        let left = item.rect.left
+        let right = left + item.size.width
+        let bottom = top + item.size.height
+
+        let selected = !(
+          sTop > bottom ||
+            sBottom < top ||
+            sLeft > right ||
+            sRight < left)
+
+        let id = item.el.id.replace('item-', '')
+        if (e.shiftKey) {
+          if (selected) {
+            this.shiftSelected.push(id)
+          }
+        } else {
+          this.selectedMap[id] = selected
+          if (selected) {
+            // for display
+            $(item.el).addClass('selected')
+          } else {
+            $(item.el).removeClass('selected')
+          }
+        }
+      }
+    }, 150)
   },
   computed: {
     selected: {
@@ -551,6 +575,7 @@ export default {
   width: calc(100%);
   background-color: #2d2d2d;
   overflow: auto;
+  overflow-x: hidden;
   margin: auto;
   .type-images,
   .type-folders {
@@ -582,10 +607,12 @@ export default {
     }
   }
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
+    border-radius: 4px;
+    // border:2px solid black;
+    box-sizing: border-box;
     background-color: rgba(94, 94, 94, 0.24);
     &:hover {
       background-color: rgb(80, 80, 80);

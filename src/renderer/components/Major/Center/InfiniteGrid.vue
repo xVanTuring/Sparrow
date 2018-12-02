@@ -73,9 +73,9 @@ export default {
       this.ig.layout()
     },
     getItems (length) {
-      var arr = []
-      for (var i = 0; i < length; i++) {
-        var fileMeta = this.list[this.start]
+      let arr = []
+      for (let i = 0; i < length; i++) {
+        let fileMeta = this.list[this.start]
         if (fileMeta) {
           arr.push(this.getItem(fileMeta))
           this.start += 1
@@ -85,7 +85,7 @@ export default {
     },
     getItem (options) {
       let imageName = (options.width > 620 && options.height > 620) ? options.name + '_thumb.png' : options.name + '.' + options.ext
-      var _path = 'file://' + path.join(store.state.App.libraryPath, 'images', options.id + '.image', imageName)
+      let _path = 'file://' + path.join(store.state.App.libraryPath, 'images', options.id + '.image', imageName)
       return (
         `<div class="item" id="item-${options.id}">
           <div class="thumbnail ">
@@ -100,7 +100,7 @@ export default {
       )
     },
     initgrid () {
-      var num = 48
+      let num = 48
       const that = this
       this.ig = new InfiniteGrid(this.$el, {
         useRecycle: true,
@@ -118,7 +118,7 @@ export default {
         },
         'append': function (e) {
           if (that.start < that.list.length) {
-            var count = num
+            let count = num
             if (that.list.length - this.start < num) {
               count = that.list.length - this.start - 1
             }
@@ -237,6 +237,7 @@ export default {
 	box-sizing: border-box;
 	border: 2px solid transparent;
 	border-radius: 4px;
+  transition: all .2s;
 }
 .item.selected .thumbnail {
 	border: 2px solid rgb(49, 141, 226);

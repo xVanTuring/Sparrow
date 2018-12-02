@@ -1,7 +1,7 @@
 import path from 'path'
 import rndName from './randomName'
 import uuid from 'uuid/v4'
-var list1 = [
+let list1 = [
   '2013-12-08.jpg',
   '2013-12-09.jpg',
   '2013-12-10.jpg',
