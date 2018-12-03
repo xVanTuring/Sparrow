@@ -10,8 +10,8 @@
       <input v-if="selectedImages.length===1" class="name-input" :value="selectedImages[0].name" placeholder="File Name" ref="nameInput" @keypress.enter="nameBlur" @blur="nameBlur" />
       <!-- TODO: icon to open url -->
       <input v-if="selectedImages.length>0" class="name-input" :value="computedURL" placeholder="http://" ref="urlInput" @blur="urlBlur" @keypress.enter="urlBlur" />
-      <el-popover placement="left" v-model="tagPanelOpen" trigger="click" width="320">
-        <TagPanel :activatedTags="imageTags" @tagClick="tagClick"></TagPanel>
+      <el-popover placement="left" v-model="tagPanelOpen" trigger="click" width="320" popper-class="tags-popper">
+        <TagPanel :activatedTags="imageTags" @tagClick="tagClick" :status="tagPanelOpen"></TagPanel>
         <div :class="{'image-tags':true,'keep-border':tagPanelOpen}" slot="reference">
           <draggable v-model="imageTags">
             <!-- TODO: Better D&D ex -->
@@ -281,27 +281,21 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
-.el-popover {
+.el-popover.tags-popper {
   background-color: rgb(59, 59, 59) !important;
   border:0 !important;
-  color: white;
   border: 0px;
   height: 400px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6) !important;
 }
-.popper__arrow{
+
+.el-popper[x-placement^="left"].tags-popper .popper__arrow {
   border-left-color:rgb(59, 59, 59) !important;
   &::after{
     border-left-color:rgb(59, 59, 59) !important;
   }
-}
-.el-popper[x-placement^="left"] .popper__arrow {
-  border-left-color: rgb(59, 59, 59);
-}
-.el-popper .popper__arrow::after {
-  content: none;
 }
 .right-image {
   height: calc(100% - 42px);

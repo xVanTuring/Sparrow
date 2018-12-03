@@ -111,6 +111,7 @@ app.on('ready', () => {
 // #endregion
 
 // #region IPC
+// TODO: functional create
 ipcMain.on('ui-create-library', (event, args) => {
   mainWindow.webContents.send('ui-create-library', args)
 })
@@ -136,10 +137,16 @@ ipcMain.on('bg-update-images', (event, args) => {
 ipcMain.on('bg-start-palette', () => {
   backgroundWindow.webContents.send('bg-start-palette')
 })
+ipcMain.on('bg-pause-palette', () => {
+  backgroundWindow.webContents.send('bg-pause-palette')
+})
 ipcMain.on('ui-update-image', (event, meta) => {
   mainWindow.webContents.send('ui-update-image', meta)
 })
 ipcMain.on('ui-image-loaded', (event, args) => {
   mainWindow.webContents.send('ui-image-loaded', args)
+})
+ipcMain.on('ui-palette-queue-length', (event, args) => {
+  mainWindow.webContents.send('ui-palette-queue-length', args)
 })
 // #endregion

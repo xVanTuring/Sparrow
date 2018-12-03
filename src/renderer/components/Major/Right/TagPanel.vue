@@ -1,6 +1,6 @@
 <template>
   <div class="tag-panel">
-    <input ref="searchInput" class="search-input" placeholder="Search or Create" v-model="searchContent" @keypress.enter="searchEnter"/>
+    <input ref="searchInput" class="search-input" placeholder="Search or Create" v-model="searchContent" @keypress.enter="searchEnter" @blur="blur"/>
     <div class="tag-group" v-if="searchContent.length === 0">
       <TagGroup v-for="key in tagKeys" :key="key" :tagId="key" :tags="mappedTags[key]" :activatedTags="activatedTags" @tagClick="tagClick"/>
     </div>
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-// TODO: chinese char
+// TODO: add recent
 import TagGroup from './TagGroup'
 import Tag from './Tag'
 import store from '@/store'
@@ -27,7 +27,8 @@ export default {
     Tag
   },
   props: {
-    activatedTags: Array
+    activatedTags: Array,
+    status: Boolean
   },
   data () {
     return {
@@ -86,7 +87,7 @@ export default {
   },
   methods: {
     blur () {
-      this.$refs.searchInput.focus()
+      this.$refs.searchInput && this.$refs.searchInput.focus()
     },
     tagKeyClick (key) {
       const id = '#tag-group-id-' + key.toUpperCase()
@@ -102,12 +103,14 @@ export default {
       this.searchContent = ''
     }
 
+  },
+  watch: {
+    status (newV) {
+      if (newV && this.$refs.searchInput) {
+        this.$refs.searchInput.focus()
+      }
+    }
   }
-  // watch: {
-  //   searchContent (newV, oldV) {
-  //     console.log(newV)
-  //   }
-  // }
 }
 </script>
 

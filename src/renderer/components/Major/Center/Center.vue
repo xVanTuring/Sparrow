@@ -617,6 +617,13 @@ export default {
 }
 
 .vue-slider-component {
+  .vue-slider{
+    height: 4px !important;
+    border-radius: 2px !important;
+  }
+  .vue-slider-process{
+    border-radius: 2px !important;
+  }
   -webkit-app-region: no-drag;
 }
 

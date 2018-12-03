@@ -26,7 +26,9 @@ const state = {
   tags: [],
   filterWord: '',
   backSelectImages: [],
-  imageSortType: 1
+  imageSortType: 1,
+  paletteProcessStatus: false,
+  paletteQueueLength: 0
 }
 const mutations = {
   SET_FILTER_WORD (state, word) {
@@ -151,6 +153,12 @@ const mutations = {
     state.imageSortType = value
     const clonedFilterType = _.clone(state.filteredImages)
     state.filteredImages = sortImages(clonedFilterType, state.imageSortType)
+  },
+  SET_PALETTE_PROCESS_STATUS (state, value) {
+    state.paletteProcessStatus = value
+  },
+  SET_PALETTE_QUEUE_LENGTH (state, value) {
+    state.paletteQueueLength = value
   }
 }
 const actions = {

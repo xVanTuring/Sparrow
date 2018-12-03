@@ -2,11 +2,12 @@
     <el-popover
         v-model="visible"
         placement="top"
-        trigger="manual"
+        trigger="hover"
         class="type"
+        popper-class="palette-popper"
     >
         <div class="palette-progress-pop">
-            11/63
+            Rest Palette: {{paletteQueueLength}}
         </div>
         <div class="hor-line">
         </div>
@@ -22,7 +23,7 @@
         </div>
         <div slot="reference" class="palette-progress-indicator" :class="{'activated':visible}" @click="indicatorClicked" @contextmenu="indicatorContext">
             <div class="circle-out">
-                <div class="circle-indicator-activated" v-if="activated">
+                <div class="circle-indicator-activated" v-if="paletteProcessStatus">
                     <div>
                     </div>
                     <div>
@@ -31,33 +32,52 @@
                 <div class="circle-indicator-paused" v-else>
                 </div>
             </div>
-            <div class="circle-in" :class="{'rotating':activated}">
+            <div class="circle-in" :class="{'rotating':paletteProcessStatus}">
             </div>
         </div>
     </el-popover>
 </template>
 
 <script>
+import store from '@/store'
+import {ipcRenderer} from 'electron'
 export default {
   data () {
     return {
-      visible: false,
-      activated: true
+      visible: false
     }
   },
   methods: {
     indicatorClicked () {
-      this.activated = !this.activated
+      this.paletteProcessStatus = !this.paletteProcessStatus
     },
     indicatorContext () {
       this.visible = true
     },
     gloMouseDown () {
-      // beter detect
       this.visible = false
     },
     cancel () {
+      this.visible = false
       console.log('Cancel')
+    }
+  },
+  computed: {
+    paletteProcessStatus: {
+      get () {
+        return store.state.App.paletteProcessStatus
+      },
+      set (val) {
+        store.commit('SET_PALETTE_PROCESS_STATUS', val)
+        if (val) {
+          ipcRenderer.send('bg-start-palette')
+        } else {
+          ipcRenderer.send('bg-pause-palette')
+        }
+      }
+    },
+    paletteQueueLength () {
+      return store.state.App.paletteQueueLength
     }
   },
   mounted () {
@@ -65,6 +85,9 @@ export default {
     setTimeout(() => {
       this.visible = true
     }, 0)
+    setTimeout(() => {
+      this.visible = false
+    }, 2000)
   },
   beforeDestroy () {
     document.removeEventListener('mousedown', this.gloMouseDown)
@@ -116,8 +139,10 @@ $size:20px;
         border-left-color: transparent;
         border-top-color: transparent;
         border-right-color: transparent;
+        animation: rotate 1s infinite linear;
+        animation-play-state: paused;
         &.rotating{
-            animation: rotate 1s infinite linear;
+            animation-play-state: running;
         }
     }
     .circle-indicator-paused{
@@ -142,11 +167,11 @@ $size:20px;
     }
 }
 
-.el-popover {
+.el-popover.palette-popper {
   background-color: rgb(49, 141, 226) !important;
   border: 0 !important;
   border: 0px;
-  box-shadow: 0 4 8px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 0px 8px rgba(0, 0, 0, 0.4) !important;
   min-width: 100px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -154,7 +179,7 @@ $size:20px;
   padding-bottom: 8px !important;
   border-radius: 8px !important;
 }
-.el-popper[x-placement^="top"] .popper__arrow{
+.el-popper[x-placement^="top"].palette-popper .popper__arrow{
     border-top-color:rgb(49, 141, 226) !important;
     &::after{
         border-top-color:rgb(49, 141, 226) !important;
@@ -164,7 +189,7 @@ $size:20px;
     color: white;
     text-align: center;
     width: 100%;
-    font-size: 130%;
+    font-size: 90%;
     height: 30px;
     line-height: 30px;
 }

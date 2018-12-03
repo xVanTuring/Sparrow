@@ -603,9 +603,14 @@ ipcRenderer.on('bg-update-images', (event, images) => {
     )
   })
 })
-ipcRenderer.on('bg-start-palette', () => {
-  console.log('IPC-BACKGROUND', 'bg-start-palette')
+let heartBeat = setInterval(() => {
   if (paletteQueue) {
+    ipcRenderer.send('ui-palette-queue-length', paletteQueue.length())
+  }
+}, 500)
+ipcRenderer.on('bg-start-palette', () => {
+  if (paletteQueue && paletteQueue.length() > 0) {
+    console.log('IPC-BACKGROUND', 'bg-start-palette')
     console.log(`paletteQueue.Length ${paletteQueue.length()}`)
     paletteQueue.resume()
   }
@@ -614,6 +619,11 @@ ipcRenderer.on('bg-pause-palette', () => {
   console.log('IPC-BACKGROUND', 'bg-pause-palette')
   if (paletteQueue) {
     paletteQueue.pause()
+  }
+})
+ipcRenderer.on('bg-clear-palette', () => {
+  if (paletteQueue) {
+    paletteQueue.kill()
   }
 })
 ipcRenderer.on('bg-auto-fix-palette', () => {

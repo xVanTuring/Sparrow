@@ -5,7 +5,7 @@
     <div class="setting-wrapper">
       <img src="@/assets/svgs/gear-o.svg"/>
     </div>
-    <PaletteProgress class="palette-progress"></PaletteProgress>
+    <PaletteProgress class="palette-progress" v-if="displayPaletteInd"></PaletteProgress>
     <div class="bottom-info" v-if="selectedImageIds.length>0 && fileProcessQueueLength===0">
       <div class="info">Selected: {{selectedImageIds.length}}</div>
       <div class="sep"></div>
@@ -58,6 +58,9 @@ export default {
     },
     fileProcessedCount () {
       return store.state.App.fileProcessedCount
+    },
+    displayPaletteInd () {
+      return store.state.App.paletteQueueLength !== 0
     }
   },
   watch: {
@@ -112,6 +115,7 @@ export default {
   .progress {
     width: 0%;
     height: 100%;
+    will-change: width;
     background-color: rgb(49, 141, 226);
     position: absolute;
     left: 0;
@@ -132,13 +136,11 @@ export default {
     img {
       display: block;
       width: 20px;
-      // margin: auto;
     }
   }
   .palette-progress{
     position: absolute;
-    left: 48px;
-    // top: 0;
+    left: 38px;
   }
   .bottom-info {
     color: #c2c2c2;

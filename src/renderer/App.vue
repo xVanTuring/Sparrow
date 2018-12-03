@@ -27,7 +27,6 @@ ipcRenderer.on('ui-create-library', (event, args) => {
 })
 ipcRenderer.on('ui-library-loaded', (events, args) => {
   setTimeout(() => {
-    // calc countmap
     store.commit('SET_LIBRARY_PATH', args.libraryDir)
     store.commit('SET_IMAGES', args.images)
     utils.folderWalker(args.folders, (item) => {
@@ -38,15 +37,19 @@ ipcRenderer.on('ui-library-loaded', (events, args) => {
     store.dispatch('libraryLoaded')
     remote.getCurrentWindow().setResizable(true)
     remote.getCurrentWindow().setSize(1320, 780, true)
-    remote.getCurrentWindow().focus()
-    remote.getCurrentWindow().center()
+    // remote.getCurrentWindow().focus()
+    remote.getCurrentWindow().flashFrame(true)
+    // remote.getCurrentWindow().center()
     ipcRenderer.send('bg-start-palette')
+    store.commit('SET_PALETTE_PROCESS_STATUS', true)
   }, 100)
 })
 ipcRenderer.on('ui-image-loaded', (event, args) => {
   store.commit('INCREASE_FILE_PROCESSED_COUNT', args)
 })
-
+ipcRenderer.on('ui-palette-queue-length', (event, args) => {
+  store.commit('SET_PALETTE_QUEUE_LENGTH', args)
+})
 ipcRenderer.on('ui-update-image', (event, meta) => {
   store.commit('UPDATE_IMAGE', meta)
   const id = '#item-' + meta.id
