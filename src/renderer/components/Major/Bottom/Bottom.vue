@@ -5,6 +5,7 @@
     <div class="setting-wrapper">
       <img src="@/assets/svgs/gear-o.svg"/>
     </div>
+    <PaletteProgress class="palette-progress"></PaletteProgress>
     <div class="bottom-info" v-if="selectedImageIds.length>0 && fileProcessQueueLength===0">
       <div class="info">Selected: {{selectedImageIds.length}}</div>
       <div class="sep"></div>
@@ -19,9 +20,13 @@
 </template>
 
 <script>
+import PaletteProgress from './PaletteProgress'
 import store from '@/store'
 import { ipcRenderer } from 'electron'
 export default {
+  components: {
+    PaletteProgress
+  },
   computed: {
     selectedImageIds () {
       return store.state.App.selectedImageIds
@@ -129,6 +134,11 @@ export default {
       width: 20px;
       // margin: auto;
     }
+  }
+  .palette-progress{
+    position: absolute;
+    left: 48px;
+    // top: 0;
   }
   .bottom-info {
     color: #c2c2c2;

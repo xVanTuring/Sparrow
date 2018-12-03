@@ -80,6 +80,7 @@ const processPalette = (task, callback) => {
   if (width > thumbSize && height > thumbSize) {
     finalPath = thumbPath
   }
+  console.log(finalPath)
   pixels(finalPath).then(data => {
     let { amount, colors } = palette(data)
     if (colors) {
@@ -117,7 +118,7 @@ const processPalette = (task, callback) => {
     }
   }).catch(err => {
     ErrorHandler(err)
-    callback()
+    callback(err)
   })
 }
 const processQueueTask = (task, callback) => {
@@ -262,8 +263,6 @@ function initQueue () {
 }
 initQueue()
 function createLibrary (parentPath, libraryName) {
-  // function error () {}
-  // make sure the parentFolder exists
   if (fs.existsSync(parentPath)) {
     let fullLibraryPath = path.join(parentPath, libraryName)
     let imagesPath = path.join(parentPath, libraryName, 'images')
@@ -618,6 +617,8 @@ ipcRenderer.on('bg-pause-palette', () => {
   }
 })
 ipcRenderer.on('bg-auto-fix-palette', () => {
-
+  if (paletteQueue) {
+    paletteQueue.kill()
+  }
 })
 // #endregion

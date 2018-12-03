@@ -160,14 +160,10 @@ export default {
     mousedown (e) {
       if (!this.moving && $(e.target).is('.container') && this.imageCount > 0) {
         // scrollbar detect
-        console.log(e.clientX)
-        console.log(e.target.clientWidth)
         if (e.clientX > e.target.clientWidth + 230) { // left-panel width
-          console.log('On the scrollbar')
+          // console.log('On the scrollbar')
           return
         }
-        // console.log(e.target.offsetWidth)
-        // console.log(e.target.clientWidth)
         store.commit('SET_SELECTED_SUB_FOLDER', '')
         this.moving = true
         this.startX = e.offsetX

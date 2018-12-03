@@ -281,7 +281,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .el-popover {
   background-color: rgb(59, 59, 59) !important;

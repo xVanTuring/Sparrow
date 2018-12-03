@@ -237,7 +237,7 @@ export default {
 	box-sizing: border-box;
 	border: 2px solid transparent;
 	border-radius: 4px;
-  transition: all .2s;
+  transition: all .15s;
 }
 .item.selected .thumbnail {
 	border: 2px solid rgb(49, 141, 226);
