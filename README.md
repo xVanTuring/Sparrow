@@ -1,6 +1,6 @@
-# sparrow
+# Sparrow
 
-> An electron-vue project
+> The Sparrow
 
 #### Build Setup
 

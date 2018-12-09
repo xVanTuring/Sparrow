@@ -39,12 +39,52 @@
         </div>
       </div>
     </div>
-
+    <v-contextmenu ref="contextmenu" class="center-context-menu">
+      <v-contextmenu-submenu title="Order" class="center-context-menu-sub">
+        <v-contextmenu-item >
+          <div class="context-item">
+            Name
+            <div class="circle">
+            </div>
+          </div>
+        </v-contextmenu-item>
+        <v-contextmenu-item >File Size</v-contextmenu-item>
+        <v-contextmenu-item >Time</v-contextmenu-item>
+        <v-contextmenu-item divider></v-contextmenu-item>
+        <v-contextmenu-item >
+          <div class="context-item">
+            Up
+            <div class="circle">
+            </div>
+          </div>
+        </v-contextmenu-item>
+        <v-contextmenu-item >Down</v-contextmenu-item>
+      </v-contextmenu-submenu>
+      <v-contextmenu-item >Display</v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >
+        <div class="context-item">
+          Masonary Layout
+          <div class="circle">
+          </div>
+        </div>
+      </v-contextmenu-item>
+      <v-contextmenu-item >
+        <div class="context-item">
+          Justified Layout
+          <div class="circle">
+          </div>
+        </div>
+      </v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >Hide Left Panel</v-contextmenu-item>
+      <v-contextmenu-item >Hide Right Panel</v-contextmenu-item>
+    </v-contextmenu>
     <div class="container eg-container" @dragleave="dragleave($event)" @dragenter="dragenter($event)" @dragover="allowDrop($event)" @drop="drop($event)">
       <div class="type-folders" v-if="subFolders.length>0">
         Sub Folders ({{subFolders.length}})
         <div class="sub-folders">
-          <GallyeryFolder v-for="sub in subFolders" v-bind:key="sub.id" :title="sub.name" :folderId="sub.id" :selectedSubFolder="selectedSubFolder" @click.native="subFolderClick(sub.id)" @dblclick.native="subFolderDBClick(sub.id)"></GallyeryFolder>
+          <GalleryFolder v-for="sub in subFolders" v-bind:key="sub.id" :title="sub.name" :folderId="sub.id" :selectedSubFolder="selectedSubFolder" @click.native="subFolderClick(sub.id)" @dblclick.native="subFolderDBClick(sub.id)"></GalleryFolder>
         </div>
       </div>
       <div class="type-images" v-if="imageCount>0 && subFolders.length>0">
@@ -66,7 +106,7 @@ import vueSlider from 'vue-slider-component'
 import ImageItem from './ImageItem'
 import EmptyFolder from './EmptyFolder'
 import InfiniteGrid from './InfiniteGrid'
-import GallyeryFolder from './GallyeryFolder'
+import GalleryFolder from './GalleryFolder'
 import store from '@/store'
 import * as utils from '@/utils'
 import { ipcRenderer } from 'electron'
@@ -77,7 +117,7 @@ export default {
     ImageItem,
     InfiniteGrid,
     EmptyFolder,
-    GallyeryFolder
+    GalleryFolder
   },
   data () {
     return {
@@ -158,6 +198,13 @@ export default {
       }
     },
     mousedown (e) {
+      if (e.button === 2 && $(e.target).is('.container')) {
+        this.$refs.contextmenu.show({
+          top: e.clientY,
+          left: e.clientX
+        })
+        return
+      }
       if (!this.moving && $(e.target).is('.container') && this.imageCount > 0) {
         // scrollbar detect
         if (e.clientX > e.target.clientWidth + 230) { // left-panel width
@@ -235,6 +282,7 @@ export default {
       }, 200)
     },
     itemClick (event) {
+      this.$refs.contextmenu.hide()
       event.stopPropagation()
       if (event.ctrlKey) {
         let $item = $('.item').has(event.target)
@@ -653,6 +701,37 @@ export default {
     background-color: rgb(49, 141, 226);
     color: white;
     pointer-events: none;
+  }
+}
+.center-context-menu,.center-context-menu .v-contextmenu{
+  background-color: #333333 !important;
+  border:0px !important;
+  box-shadow: 0 0 4px rgba(0, 0, 0, .4) !important;
+  min-width: 180px;
+  padding: 8px 0px !important;
+  .center-context-menu-sub .v-contextmenu{
+    min-width: 140px;
+  }
+  .v-contextmenu-item{
+    color: white !important;
+    padding:8px 14px 8px 20px !important;
+  }
+  .v-contextmenu-item--hover{
+    background-color: #404040 !important;
+  }
+  .v-contextmenu-divider{
+    border-bottom:1px solid #686868 !important;
+  }
+  .context-item{
+    display: flex;
+    align-items: center;
+  }
+  .circle{
+    width: 8px;
+    height: 8px;
+    background-color: rgb(49, 141, 226);
+    border-radius: 50%;
+    margin-left: auto;
   }
 }
 </style>

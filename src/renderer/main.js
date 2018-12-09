@@ -4,15 +4,16 @@ import Toasted from 'vue-toasted'
 import App from './App'
 import store from './store'
 import messages from './i18n'
-// 引入部分组件
 import ElementUI from 'element-ui'
+import contentmenu from 'v-contextmenu'
+import 'v-contextmenu/dist/index.css'
 import './globals.scss'
-// import 'element-ui/lib/theme-chalk/index.css'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 Vue.use(VueI18n)
 Vue.use(ElementUI)
+Vue.use(contentmenu)
 Vue.use(Toasted, {
   position: 'bottom-right',
   duration: 1500
