@@ -39,46 +39,52 @@
         </div>
       </div>
     </div>
-    <v-contextmenu ref="contextmenu" class="center-context-menu">
+    <v-contextmenu ref="contextmenu" class="center-context-menu menu-container">
       <v-contextmenu-submenu title="Order" class="center-context-menu-sub">
         <v-contextmenu-item >
-          <div class="context-item">
-            Name
-            <div class="circle">
-            </div>
-          </div>
+          <MenuChooseItem title="Name" :activated="Math.abs(imageSortType)===1"/>
         </v-contextmenu-item>
-        <v-contextmenu-item >File Size</v-contextmenu-item>
-        <v-contextmenu-item >Time</v-contextmenu-item>
+        <v-contextmenu-item >
+          <MenuChooseItem title="File Size" :activated="Math.abs(imageSortType)===3"/>
+        </v-contextmenu-item>
+        <v-contextmenu-item >
+          <MenuChooseItem title="Modification Time" :activated="Math.abs(imageSortType)===2"/>
+        </v-contextmenu-item>
         <v-contextmenu-item divider></v-contextmenu-item>
         <v-contextmenu-item >
-          <div class="context-item">
-            Up
-            <div class="circle">
-            </div>
-          </div>
+          <MenuChooseItem title="Up" :activated="imageSortType>0"/>
         </v-contextmenu-item>
-        <v-contextmenu-item >Down</v-contextmenu-item>
+        <v-contextmenu-item >
+          <MenuChooseItem title="Down" :activated="imageSortType<0"/>
+        </v-contextmenu-item>
       </v-contextmenu-submenu>
       <v-contextmenu-item >Display</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
       <v-contextmenu-item >
-        <div class="context-item">
-          Masonary Layout
-          <div class="circle">
-          </div>
-        </div>
+        <MenuChooseItem title="Masonary Layout" :activated="layoutType===0"/>
       </v-contextmenu-item>
       <v-contextmenu-item >
-        <div class="context-item">
-          Justified Layout
-          <div class="circle">
-          </div>
-        </div>
+        <MenuChooseItem title="Justified Layout" :activated="layoutType!==0"/>
       </v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
       <v-contextmenu-item >Hide Left Panel</v-contextmenu-item>
       <v-contextmenu-item >Hide Right Panel</v-contextmenu-item>
+    </v-contextmenu>
+    <v-contextmenu ref="contextmenu2" class="center-context-menu menu-image">
+      <v-contextmenu-item >Open in New Window</v-contextmenu-item>
+      <v-contextmenu-item >Open with Default App</v-contextmenu-item>
+      <v-contextmenu-item >Reveal in Explorer</v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >Rename</v-contextmenu-item>
+      <v-contextmenu-item >Copy Image (File)</v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >Re-Generate Thumb</v-contextmenu-item>
+      <v-contextmenu-item >Thumb Background</v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >Add to ...</v-contextmenu-item>
+      <v-contextmenu-item >Remote From Current Folder</v-contextmenu-item>
+      <v-contextmenu-item divider></v-contextmenu-item>
+      <v-contextmenu-item >Move to Trash</v-contextmenu-item>
     </v-contextmenu>
     <div class="container eg-container" @dragleave="dragleave($event)" @dragenter="dragenter($event)" @dragover="allowDrop($event)" @drop="drop($event)">
       <div class="type-folders" v-if="subFolders.length>0">
@@ -103,13 +109,14 @@
 </template>
 <script>
 import vueSlider from 'vue-slider-component'
+import MenuChooseItem from './MenuChooseItem'
 import ImageItem from './ImageItem'
 import EmptyFolder from './EmptyFolder'
 import InfiniteGrid from './InfiniteGrid'
 import GalleryFolder from './GalleryFolder'
 import store from '@/store'
 import * as utils from '@/utils'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 import _ from 'lodash'
 export default {
   components: {
@@ -117,7 +124,8 @@ export default {
     ImageItem,
     InfiniteGrid,
     EmptyFolder,
-    GalleryFolder
+    GalleryFolder,
+    MenuChooseItem
   },
   data () {
     return {
@@ -198,11 +206,43 @@ export default {
       }
     },
     mousedown (e) {
+      this.$refs.contextmenu.hide()
+      this.$refs.contextmenu2.hide()
+      if (e.button === 2 && $(e.target).is('.thumbnial-img')) {
+        let id = $(e.target).parent().parent().attr('id').replace('item-', '')
+        if (this.selected.length === 0 || this.selected.indexOf(id) === -1) {
+          this.selected = [id]
+        }
+        if (remote.getCurrentWindow().getBounds().height < e.clientY + ($('.menu-image').height() || 360)) {
+          this.$refs.contextmenu2.show({
+            top: e.clientY - $('.menu-image').height() || 360,
+            left: e.clientX
+          })
+        } else {
+          this.$refs.contextmenu2.show({
+            top: e.clientY,
+            left: e.clientX
+          })
+        }
+        return
+      }
       if (e.button === 2 && $(e.target).is('.container')) {
-        this.$refs.contextmenu.show({
-          top: e.clientY,
-          left: e.clientX
-        })
+        this.selected = []
+        this.selectedSubFolder = ''
+        console.log(remote.getCurrentWindow().getBounds().height, e.clientY + $('.menu-container').height() || 218)
+        if (remote.getCurrentWindow().getBounds().height < e.clientY + ($('.menu-container').height() || 218)) {
+          this.$refs.contextmenu.show({
+            top: e.clientY - $('.menu-container').height() || 218,
+            left: e.clientX
+          })
+        } else {
+          console.log(7777)
+          this.$refs.contextmenu.show({
+            top: e.clientY,
+            left: e.clientX
+          })
+        }
+
         return
       }
       if (!this.moving && $(e.target).is('.container') && this.imageCount > 0) {
@@ -211,7 +251,8 @@ export default {
           // console.log('On the scrollbar')
           return
         }
-        store.commit('SET_SELECTED_SUB_FOLDER', '')
+        // store.commit('SET_SELECTED_SUB_FOLDER', '')
+        this.selectedSubFolder = ''
         this.moving = true
         this.startX = e.offsetX
         this.startY = e.offsetY + e.target.scrollTop
@@ -349,13 +390,16 @@ export default {
     },
     sortType (type) {
       if (this.imageSortType === type) {
-        store.commit('SET_IMAGE_SORT_TYPE', -type)
+        this.imageSortType = -type
+        // store.commit('SET_IMAGE_SORT_TYPE', -type)
       } else {
-        store.commit('SET_IMAGE_SORT_TYPE', type)
+        this.imageSortType = type
+        // store.commit('SET_IMAGE_SORT_TYPE', type)
       }
     },
     orderClick () {
-      store.commit('SET_SORT_TYPE', !this.changingSortType)
+      this.changingSortType = !this.changingSortType
+      // store.commit('SET_CHANGING_SORT_TYPE', !this.changingSortType)
     },
     check: _.throttle(function (e) {
       if (!this.moving) {
@@ -427,26 +471,57 @@ export default {
         store.commit('SET_FILTER_WORD', value)
       }
     },
-    filteredImages () {
-      return store.state.App.filteredImages
+    filteredImages: {
+      get () {
+        return store.state.App.filteredImages
+      }
     },
-    imageCount () {
-      return store.state.App.filteredImages.length
+    imageCount: {
+      get () {
+        return store.state.App.filteredImages.length
+      }
     },
-    selectedFolder () {
-      return store.state.App.selectedFolder
+    selectedFolder: {
+      get () {
+        return store.state.App.selectedFolder
+      }
     },
-    selectedSubFolder () {
-      return store.state.App.selectedSubFolder
+    selectedSubFolder: {
+      get () {
+        return store.state.App.selectedSubFolder
+      },
+      set (value) {
+        store.commit('SET_SELECTED_SUB_FOLDER', value)
+      }
     },
-    folders () {
-      return store.state.App.folders
+    folders: {
+      get () {
+        return store.state.App.folders
+      }
     },
-    imageSortType () {
-      return store.state.App.imageSortType
+    imageSortType: {
+      get () {
+        return store.state.App.imageSortType
+      },
+      set (value) {
+        store.commit('SET_IMAGE_SORT_TYPE', value)
+      }
     },
-    changingSortType () {
-      return store.state.Center.changingSortType
+    changingSortType: {
+      get () {
+        return store.state.Center.changingSortType
+      },
+      set (value) {
+        store.commit('SET_CHANGING_SORT_TYPE', value)
+      }
+    },
+    layoutType: {
+      get () {
+        return store.state.App.layoutType
+      },
+      set (value) {
+        store.commit('SET_LAYOUT_TYPE', value)
+      }
     }
   },
   mounted () {
@@ -459,9 +534,9 @@ export default {
     }
   },
   watch: {
-    selected (newV) {
-      // store.commit('SET_SELECTED_IMAGE_IDS', _.cloneDeep(newV))
-    },
+    // selected (newV) {
+    //   // store.commit('SET_SELECTED_IMAGE_IDS', _.cloneDeep(newV))
+    // },
     folders () {
       if (store.state.App.folderMap[store.state.App.selectedFolder]) {
         this.subFolders = store.state.App.folderMap[store.state.App.selectedFolder].children
@@ -706,7 +781,7 @@ export default {
 .center-context-menu,.center-context-menu .v-contextmenu{
   background-color: #333333 !important;
   border:0px !important;
-  box-shadow: 0 0 4px rgba(0, 0, 0, .4) !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, .8) !important;
   min-width: 180px;
   padding: 8px 0px !important;
   .center-context-menu-sub .v-contextmenu{
@@ -721,17 +796,6 @@ export default {
   }
   .v-contextmenu-divider{
     border-bottom:1px solid #686868 !important;
-  }
-  .context-item{
-    display: flex;
-    align-items: center;
-  }
-  .circle{
-    width: 8px;
-    height: 8px;
-    background-color: rgb(49, 141, 226);
-    border-radius: 50%;
-    margin-left: auto;
   }
 }
 </style>

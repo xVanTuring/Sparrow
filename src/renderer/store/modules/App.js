@@ -28,9 +28,13 @@ const state = {
   backSelectImages: [],
   imageSortType: 1,
   paletteProcessStatus: false,
-  paletteQueueLength: 0
+  paletteQueueLength: 0,
+  layoutType: 0
 }
 const mutations = {
+  SET_LAYOUT_TYPE (state, value) {
+    state.layoutType = value
+  },
   SET_FILTER_WORD (state, word) {
     state.filterWord = word
     const filteredImages = filter(state.images, state.selectedFolder, state.filterWord)
