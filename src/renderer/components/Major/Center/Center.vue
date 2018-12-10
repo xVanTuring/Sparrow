@@ -1,190 +1,158 @@
 <template>
   <div class="center-root">
-    <!-- TODO: move to sub -->
-    <div class="top-area">
-      <div class="slider-wrapper">
-        <vueSlider id="slider" v-model="zoomLevel" v-bind="options"> -->
-        </vueSlider>
-      </div>
-      <div class="func-wrapper">
-        <div class="sort-wrapper" :class="{'hidden':!changingSortType}">
-          <div class="order-item" 
-            :class="{'activated':Math.abs(imageSortType)===1,'inverse':imageSortType===-1}" 
-            @click="sortType(1)">
-            <span>N</span>
-          </div>
-          <div class="sep"></div>
-          <div class="order-item" 
-            :class="{'activated':Math.abs(imageSortType)===2,'inverse':imageSortType===-2}" 
-            @click="sortType(2)">
-            <span>M</span>
-          </div>
-          <div class="sep"></div>
-          <div class="order-item" 
-            :class="{'activated':Math.abs(imageSortType)===3,'inverse':imageSortType===-3}" 
-            @click="sortType(3)">
-            <span>S</span>
-          </div>
-          <div class="sep"></div>
-        </div>
-        <div class="order-wrapper" :class="{'activated':changingSortType}" @click="orderClick">
-        </div>
-        <div class="sep"></div>
-        <div class="filter-wrapper ">
-        </div>
-        <div class="sep"></div>
-        <div class="input-wrapper">
-          <input :class="{keep:filterWord!==''}" v-model="filterWord" />
-          <div class="search-in-input"></div>
-        </div>
-      </div>
-    </div>
+    <CenterTop></CenterTop>
     <v-contextmenu ref="contextmenu" class="center-context-menu menu-container">
       <v-contextmenu-submenu title="Order" class="center-context-menu-sub">
-        <v-contextmenu-item >
+        <v-contextmenu-item>
           <MenuChooseItem title="Name" :activated="Math.abs(imageSortType)===1"/>
         </v-contextmenu-item>
-        <v-contextmenu-item >
+        <v-contextmenu-item>
           <MenuChooseItem title="File Size" :activated="Math.abs(imageSortType)===3"/>
         </v-contextmenu-item>
-        <v-contextmenu-item >
+        <v-contextmenu-item>
           <MenuChooseItem title="Modification Time" :activated="Math.abs(imageSortType)===2"/>
         </v-contextmenu-item>
         <v-contextmenu-item divider></v-contextmenu-item>
-        <v-contextmenu-item >
+        <v-contextmenu-item>
           <MenuChooseItem title="Up" :activated="imageSortType>0"/>
         </v-contextmenu-item>
-        <v-contextmenu-item >
+        <v-contextmenu-item>
           <MenuChooseItem title="Down" :activated="imageSortType<0"/>
         </v-contextmenu-item>
       </v-contextmenu-submenu>
-      <v-contextmenu-item >Display</v-contextmenu-item>
+      <v-contextmenu-item>Display</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >
+      <v-contextmenu-item>
         <MenuChooseItem title="Masonary Layout" :activated="layoutType===0"/>
       </v-contextmenu-item>
-      <v-contextmenu-item >
+      <v-contextmenu-item>
         <MenuChooseItem title="Justified Layout" :activated="layoutType!==0"/>
       </v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >Hide Left Panel</v-contextmenu-item>
-      <v-contextmenu-item >Hide Right Panel</v-contextmenu-item>
+      <v-contextmenu-item>Hide Left Panel</v-contextmenu-item>
+      <v-contextmenu-item>Hide Right Panel</v-contextmenu-item>
     </v-contextmenu>
     <v-contextmenu ref="contextmenu2" class="center-context-menu menu-image">
-      <v-contextmenu-item >Open in New Window</v-contextmenu-item>
-      <v-contextmenu-item >Open with Default App</v-contextmenu-item>
-      <v-contextmenu-item >Reveal in Explorer</v-contextmenu-item>
+      <v-contextmenu-item>Open in New Window</v-contextmenu-item>
+      <v-contextmenu-item>Open with Default App</v-contextmenu-item>
+      <v-contextmenu-item>Reveal in Explorer</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >Rename</v-contextmenu-item>
-      <v-contextmenu-item >Copy Image (File)</v-contextmenu-item>
+      <v-contextmenu-item>Rename</v-contextmenu-item>
+      <v-contextmenu-item>Copy Image (File)</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >Re-Generate Thumb</v-contextmenu-item>
-      <v-contextmenu-item >Thumb Background</v-contextmenu-item>
+      <v-contextmenu-item>Re-Generate Thumb</v-contextmenu-item>
+      <v-contextmenu-item>Thumb Background</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >Add to ...</v-contextmenu-item>
-      <v-contextmenu-item >Remote From Current Folder</v-contextmenu-item>
+      <v-contextmenu-item>Add to ...</v-contextmenu-item>
+      <v-contextmenu-item>Remote From Current Folder</v-contextmenu-item>
       <v-contextmenu-item divider></v-contextmenu-item>
-      <v-contextmenu-item >Move to Trash</v-contextmenu-item>
+      <v-contextmenu-item>Move to Trash</v-contextmenu-item>
     </v-contextmenu>
-    <div class="container eg-container" @dragleave="dragleave($event)" @dragenter="dragenter($event)" @dragover="allowDrop($event)" @drop="drop($event)">
+    <div
+      class="container eg-container"
+      @dragleave="dragleave($event)"
+      @dragenter="dragenter($event)"
+      @dragover="allowDrop($event)"
+      @drop="drop($event)"
+    >
       <div class="type-folders" v-if="subFolders.length>0">
         Sub Folders ({{subFolders.length}})
         <div class="sub-folders">
-          <GalleryFolder v-for="sub in subFolders" v-bind:key="sub.id" :title="sub.name" :folderId="sub.id" :selectedSubFolder="selectedSubFolder" @click.native="subFolderClick(sub.id)" @dblclick.native="subFolderDBClick(sub.id)"></GalleryFolder>
+          <GalleryFolder
+            v-for="sub in subFolders"
+            v-bind:key="sub.id"
+            :title="sub.name"
+            :folderId="sub.id"
+            :selectedSubFolder="selectedSubFolder"
+            @click.native="subFolderClick(sub.id)"
+            @dblclick.native="subFolderDBClick(sub.id)"
+          ></GalleryFolder>
         </div>
       </div>
-      <div class="type-images" v-if="imageCount>0 && subFolders.length>0">
-        Images ({{imageCount}})
-      </div>
-      <InfiniteGrid ref="infinitegrid" v-if="filteredImages.length > 0" :list="filteredImages" :itemSize="itemSize" :selected="selected"></InfiniteGrid>
-      <EmptyFolder v-if="imageCount===0 && (subFolders.length===0)" :type="filterWord.length===0?0:1"/>
+      <div class="type-images" v-if="imageCount>0 && subFolders.length>0">Images ({{imageCount}})</div>
+      <InfiniteGrid ref="infinitegrid" v-if="filteredImages.length > 0"></InfiniteGrid>
+      <EmptyFolder
+        v-if="imageCount===0 && (subFolders.length===0)"
+        :type="filterWord.length===0?0:1"
+      />
       <!-- fileDragOver -->
     </div>
-      <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
-        <div v-if="fileDragOver" class="tip">
-          Drop to add
-        </div>
-      </div>
+    <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
+      <div v-if="fileDragOver" class="tip">Drop to add</div>
+    </div>
   </div>
 </template>
 <script>
-import vueSlider from 'vue-slider-component'
-import MenuChooseItem from './MenuChooseItem'
-import ImageItem from './ImageItem'
-import EmptyFolder from './EmptyFolder'
-import InfiniteGrid from './InfiniteGrid'
-import GalleryFolder from './GalleryFolder'
-import store from '@/store'
-import * as utils from '@/utils'
-import { ipcRenderer, remote } from 'electron'
-import _ from 'lodash'
+// import vueSlider from "vue-slider-component";
+import MenuChooseItem from "./MenuChooseItem";
+import ImageItem from "./ImageItem";
+import EmptyFolder from "./EmptyFolder";
+import InfiniteGrid from "./InfiniteGrid";
+import GalleryFolder from "./GalleryFolder";
+import CenterTop from "./CenterTop";
+import store from "@/store";
+import * as utils from "@/utils";
+import { ipcRenderer, remote } from "electron";
+import _ from "lodash";
 export default {
   components: {
-    vueSlider,
+    // vueSlider,
     ImageItem,
     InfiniteGrid,
     EmptyFolder,
     GalleryFolder,
-    MenuChooseItem
+    MenuChooseItem,
+    CenterTop
   },
-  data () {
+  data() {
     return {
       fileDragOver: false,
-      options: {
-        tooltip: 'hover',
-        min: 0,
-        max: 6,
-        interval: 0.2,
-        'tooltip-dir': 'bottom',
-        lazy: true
-      },
       itemSize: 200,
       moving: false,
       startX: 0,
       startY: 0,
       selectRect: {},
-      // selected: [],
       dragEnterCounter: 0,
       subFolders: [],
       selectedMap: {}
-    }
+    };
   },
   methods: {
-    subFolderClick (id) {
+    subFolderClick(id) {
       if (this.selectedSubFolder === id) {
-        store.commit('SET_SELECTED_SUB_FOLDER', '')
+        store.commit("SET_SELECTED_SUB_FOLDER", "");
       } else {
-        store.commit('SET_SELECTED_SUB_FOLDER', id)
+        store.commit("SET_SELECTED_SUB_FOLDER", id);
       }
     },
-    subFolderDBClick (id) {
-      store.dispatch('setSelectedFolder', id)
+    subFolderDBClick(id) {
+      store.dispatch("setSelectedFolder", id);
     },
-    dragenter (event) {
-      event.preventDefault()
-      this.dragEnterCounter++
+    dragenter(event) {
+      event.preventDefault();
+      this.dragEnterCounter++;
       if (!store.state.App.ImageDragging) {
-        this.fileDragOver = true
+        this.fileDragOver = true;
       }
     },
-    allowDrop (event) {
-      event.preventDefault()
+    allowDrop(event) {
+      event.preventDefault();
     },
-    dragleave (event) {
-      this.dragEnterCounter--
+    dragleave(event) {
+      this.dragEnterCounter--;
       if (this.dragEnterCounter === 0) {
-        this.fileDragOver = false
+        this.fileDragOver = false;
       }
     },
-    drop (event) {
-      event.preventDefault()
-      this.fileDragOver = false
-      this.dragEnterCounter = 0
+    drop(event) {
+      event.preventDefault();
+      this.fileDragOver = false;
+      this.dragEnterCounter = 0;
       if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
-        let files = [...event.dataTransfer.files]
+        let files = [...event.dataTransfer.files];
         let result = files
           .filter(item => {
-            return utils.imageType(item.type)
+            return utils.imageType(item.type);
           })
           .map(file => {
             let data = {
@@ -193,253 +161,255 @@ export default {
               path: file.path,
               size: file.size,
               type: file.type
+            };
+            if (
+              store.state.App.selectedFolder !== "$$all$$" &&
+              store.state.App.selectedFolder !== "$$recent$$" &&
+              store.state.App.selectedFolder !== "$$ttash$$"
+            ) {
+              data.folder = store.state.App.selectedFolder;
             }
-            if (store.state.App.selectedFolder !== '$$all$$' &&
-              store.state.App.selectedFolder !== '$$recent$$' &&
-              store.state.App.selectedFolder !== '$$ttash$$') {
-              data.folder = store.state.App.selectedFolder
-            }
-            return data
-          })
-        store.commit('SET_FILE_PROCESS_QUEUE_LENGTH', result.length)
-        ipcRenderer.send('bg-add-local-images', { images: result })
+            return data;
+          });
+        store.commit("SET_FILE_PROCESS_QUEUE_LENGTH", result.length);
+        ipcRenderer.send("bg-add-local-images", { images: result });
       }
     },
-    mousedown (e) {
-      this.$refs.contextmenu.hide()
-      this.$refs.contextmenu2.hide()
-      if (e.button === 2 && $(e.target).is('.thumbnial-img')) {
-        let id = $(e.target).parent().parent().attr('id').replace('item-', '')
+    mousedown(e) {
+      this.$refs.contextmenu.hide();
+      this.$refs.contextmenu2.hide();
+      if (e.button === 2 && $(e.target).is(".thumbnial-img")) {
+        let id = $(e.target)
+          .parent()
+          .parent()
+          .attr("id")
+          .replace("item-", "");
         if (this.selected.length === 0 || this.selected.indexOf(id) === -1) {
-          this.selected = [id]
+          this.selected = [id];
         }
-        if (remote.getCurrentWindow().getBounds().height < e.clientY + ($('.menu-image').height() || 360)) {
+        if (
+          remote.getCurrentWindow().getBounds().height <
+          e.clientY + ($(".menu-image").height() || 360)
+        ) {
           this.$refs.contextmenu2.show({
-            top: e.clientY - $('.menu-image').height() || 360,
+            top: e.clientY - $(".menu-image").height() || 360,
             left: e.clientX
-          })
+          });
         } else {
           this.$refs.contextmenu2.show({
             top: e.clientY,
             left: e.clientX
-          })
+          });
         }
-        return
+        return;
       }
-      if (e.button === 2 && $(e.target).is('.container')) {
-        this.selected = []
-        this.selectedSubFolder = ''
-        console.log(remote.getCurrentWindow().getBounds().height, e.clientY + $('.menu-container').height() || 218)
-        if (remote.getCurrentWindow().getBounds().height < e.clientY + ($('.menu-container').height() || 218)) {
+      if (e.button === 2 && $(e.target).is(".container")) {
+        this.selected = [];
+        this.selectedSubFolder = "";
+        if (
+          remote.getCurrentWindow().getBounds().height <
+          e.clientY + ($(".menu-container").height() || 218)
+        ) {
           this.$refs.contextmenu.show({
-            top: e.clientY - $('.menu-container').height() || 218,
+            top: e.clientY - $(".menu-container").height() || 218,
             left: e.clientX
-          })
+          });
         } else {
-          console.log(7777)
           this.$refs.contextmenu.show({
             top: e.clientY,
             left: e.clientX
-          })
+          });
         }
 
-        return
+        return;
       }
-      if (!this.moving && $(e.target).is('.container') && this.imageCount > 0) {
+      if (!this.moving && $(e.target).is(".container") && this.imageCount > 0) {
         // scrollbar detect
-        if (e.clientX > e.target.clientWidth + 230) { // left-panel width
+        if (e.clientX > e.target.clientWidth + 230) {
+          // left-panel width
           // console.log('On the scrollbar')
-          return
+          return;
         }
         // store.commit('SET_SELECTED_SUB_FOLDER', '')
-        this.selectedSubFolder = ''
-        this.moving = true
-        this.startX = e.offsetX
-        this.startY = e.offsetY + e.target.scrollTop
+        this.selectedSubFolder = "";
+        this.moving = true;
+        this.startX = e.offsetX;
+        this.startY = e.offsetY + e.target.scrollTop;
         if (!e.shiftKey) {
-          this.selected = []
+          this.selected = [];
         }
-        if ($('.container .mask').length === 0) {
-          $('.container').append('<div class="mask"></div>')
+        if ($(".container .mask").length === 0) {
+          $(".container").append('<div class="mask"></div>');
         }
       }
     },
-    mousemove (eve) {
+    mousemove(eve) {
       if (this.moving) {
-        let offset = $('.container').offset()
-        let endX = eve.pageX - offset.left
-        let endY = eve.pageY - offset.top + $('.container').scrollTop()
-        let flipX = this.startX > endX
-        let flipY = this.startY > endY
+        let offset = $(".container").offset();
+        let endX = eve.pageX - offset.left;
+        let endY = eve.pageY - offset.top + $(".container").scrollTop();
+        let flipX = this.startX > endX;
+        let flipY = this.startY > endY;
         if (flipX) {
-          endX = endX > 0 ? endX : 0
+          endX = endX > 0 ? endX : 0;
         }
         if (flipY) {
-          endY = endY > 0 ? endY : 0
+          endY = endY > 0 ? endY : 0;
         }
-        this.selectRect.width = parseInt(Math.abs(endX - this.startX))
-        this.selectRect.height = parseInt(Math.abs(endY - this.startY))
-        this.selectRect.x = this.startX
-        this.selectRect.y = this.startY
+        this.selectRect.width = parseInt(Math.abs(endX - this.startX));
+        this.selectRect.height = parseInt(Math.abs(endY - this.startY));
+        this.selectRect.x = this.startX;
+        this.selectRect.y = this.startY;
         if (flipX) {
-          this.selectRect.x = this.startX - this.selectRect.width
+          this.selectRect.x = this.startX - this.selectRect.width;
         }
         if (flipY) {
-          this.selectRect.y = this.startY - this.selectRect.height
+          this.selectRect.y = this.startY - this.selectRect.height;
         }
 
-        $('.mask').css({
-          'left': this.selectRect.x + 'px',
-          'top': this.selectRect.y + 'px',
-          'width': this.selectRect.width + 'px',
-          'height': this.selectRect.height + 'px'
-        }).addClass('visible').show()
-        this.check(eve)
+        $(".mask")
+          .css({
+            left: this.selectRect.x + "px",
+            top: this.selectRect.y + "px",
+            width: this.selectRect.width + "px",
+            height: this.selectRect.height + "px"
+          })
+          .addClass("visible")
+          .show();
+        this.check(eve);
       }
     },
-    mouseup () {
+    mouseup() {
       if (!this.moving) {
-        return
+        return;
       }
-      this.moving = false
-      this.selectRect.width = 0
-      this.selectRect.height = 0
-      this.selectRect.x = 0
-      this.selectRect.y = 0
-      this.startX = 0
-      this.startY = 0
-      $('.container .mask').remove()
+      this.moving = false;
+      this.selectRect.width = 0;
+      this.selectRect.height = 0;
+      this.selectRect.x = 0;
+      this.selectRect.y = 0;
+      this.startX = 0;
+      this.startY = 0;
+      $(".container .mask").remove();
       setTimeout(() => {
         // let ig = this.$refs.infinitegrid.ig
         // let items = ig.getItems(true)
-        const cloned = _.clone(this.selected)
+        const cloned = _.clone(this.selected);
         for (let key of Object.keys(this.selectedMap)) {
           if (this.selectedMap[key]) {
-            cloned.push(key)
+            cloned.push(key);
           }
         }
-        this.selectedMap = {}
-        this.selected = cloned
-      }, 200)
+        this.selectedMap = {};
+        this.selected = cloned;
+      }, 200);
     },
-    itemClick (event) {
-      this.$refs.contextmenu.hide()
-      event.stopPropagation()
+    itemClick(event) {
+      this.$refs.contextmenu.hide();
+      event.stopPropagation();
       if (event.ctrlKey) {
-        let $item = $('.item').has(event.target)
-        let id = $item[0].id.replace('item-', '')
+        let $item = $(".item").has(event.target);
+        let id = $item[0].id.replace("item-", "");
         if (this.selected.indexOf(id) === -1) {
           // add
           // this.selected.push(id)
-          const cloned = _.clone(this.selected)
-          cloned.push(id)
-          this.selected = cloned
+          const cloned = _.clone(this.selected);
+          cloned.push(id);
+          this.selected = cloned;
         } else {
-          const cloned = _.clone(this.selected)
-          cloned.splice(this.selected.indexOf(id), 1)
-          this.selected = cloned
+          const cloned = _.clone(this.selected);
+          cloned.splice(this.selected.indexOf(id), 1);
+          this.selected = cloned;
         }
-        return
+        return;
       }
       if (event.shiftKey && this.selected.length > 0) {
-        let $item = $('.item').has(event.target)
-        let endId = $item[0].id.replace('item-', '')
-        let startId = this.selected[0]
+        let $item = $(".item").has(event.target);
+        let endId = $item[0].id.replace("item-", "");
+        let startId = this.selected[0];
         if (startId === endId) {
-          this.selected = []
-          return
+          this.selected = [];
+          return;
         }
-        this.selected = []
+        this.selected = [];
         let idList = this.filteredImages.map(item => {
-          return item.id
-        })
-        let startIndex = idList.indexOf(startId)
-        let endIndex = idList.indexOf(endId)
-        let flip = false
+          return item.id;
+        });
+        let startIndex = idList.indexOf(startId);
+        let endIndex = idList.indexOf(endId);
+        let flip = false;
         if (startIndex > endIndex) {
-          flip = true
-          let tmp = startIndex
-          startIndex = endIndex
-          endIndex = tmp
+          flip = true;
+          let tmp = startIndex;
+          startIndex = endIndex;
+          endIndex = tmp;
         }
-        let selected = this.filteredImages.slice(startIndex, endIndex + 1)
+        let selected = this.filteredImages.slice(startIndex, endIndex + 1);
         selected.forEach(item => {
           if (flip) {
             // this.selected.unshift(item.id)
-            const cloned = _.clone(this.selected)
-            cloned.unshift(item.id)
-            this.selected = cloned
+            const cloned = _.clone(this.selected);
+            cloned.unshift(item.id);
+            this.selected = cloned;
           } else {
             // this.selected.push(item.id)
-            const cloned = _.clone(this.selected)
-            cloned.push(item.id)
-            this.selected = cloned
+            const cloned = _.clone(this.selected);
+            cloned.push(item.id);
+            this.selected = cloned;
           }
-        })
+        });
       } else {
-        let $item = $('.item').has(event.target)
-        let id = $item[0].id.replace('item-', '')
+        let $item = $(".item").has(event.target);
+        let id = $item[0].id.replace("item-", "");
         if (this.selected.length <= 1 || this.selected.indexOf(id) === -1) {
-          let $item = $('.item').has(event.target)
-          let id = $item[0].id.replace('item-', '')
-          this.selected = [id]
+          let $item = $(".item").has(event.target);
+          let id = $item[0].id.replace("item-", "");
+          this.selected = [id];
         }
       }
     },
-    onScroll () {
-    },
-    sortType (type) {
-      if (this.imageSortType === type) {
-        this.imageSortType = -type
-        // store.commit('SET_IMAGE_SORT_TYPE', -type)
-      } else {
-        this.imageSortType = type
-        // store.commit('SET_IMAGE_SORT_TYPE', type)
-      }
-    },
-    orderClick () {
-      this.changingSortType = !this.changingSortType
-      // store.commit('SET_CHANGING_SORT_TYPE', !this.changingSortType)
-    },
-    check: _.throttle(function (e) {
+    onScroll() {},
+    check: _.throttle(function(e) {
       if (!this.moving) {
-        return
+        return;
       }
-      let ig = this.$refs.infinitegrid.ig
-      let oTop = document.getElementsByClassName('vue-infinite-grid')[0].offsetTop
-      let items = ig.getItems(true)
-      let sLeft = this.selectRect.x
-      let sTop = this.selectRect.y
-      let sBottom = this.selectRect.height + sTop
-      let sRight = this.selectRect.width + sLeft
+      let ig = this.$refs.infinitegrid.ig;
+      let oTop = document.getElementsByClassName("vue-infinite-grid")[0]
+        .offsetTop;
+      let items = ig.getItems(true);
+      let sLeft = this.selectRect.x;
+      let sTop = this.selectRect.y;
+      let sBottom = this.selectRect.height + sTop;
+      let sRight = this.selectRect.width + sLeft;
       for (let i = 0; i < items.length; i++) {
-        let item = items[i]
+        let item = items[i];
         if (!item || !item.el) {
-          continue
+          continue;
         }
-        let top = item.rect.top + oTop
-        let left = item.rect.left
-        let right = left + item.size.width
-        let bottom = top + item.size.height
+        let top = item.rect.top + oTop;
+        let left = item.rect.left;
+        let right = left + item.size.width;
+        let bottom = top + item.size.height;
 
         let selected = !(
           sTop > bottom ||
-            sBottom < top ||
-            sLeft > right ||
-            sRight < left)
+          sBottom < top ||
+          sLeft > right ||
+          sRight < left
+        );
 
-        let id = item.el.id.replace('item-', '')
+        let id = item.el.id.replace("item-", "");
         if (e.shiftKey) {
           if (selected) {
-            this.shiftSelected.push(id)
+            this.shiftSelected.push(id);
           }
         } else {
-          this.selectedMap[id] = selected
+          this.selectedMap[id] = selected;
           if (selected) {
             // for display
-            $(item.el).addClass('selected')
+            $(item.el).addClass("selected");
           } else {
-            $(item.el).removeClass('selected')
+            $(item.el).removeClass("selected");
           }
         }
       }
@@ -447,113 +417,97 @@ export default {
   },
   computed: {
     selected: {
-      get () {
-        return store.state.App.selectedImageIds
+      get() {
+        return store.state.App.selectedImageIds;
       },
-      set (value) {
-        store.commit('SET_SELECTED_IMAGE_IDS', value)
-      }
-    },
-    zoomLevel: {
-      get () {
-        return store.state.App.zoomLevel
-      },
-      set (value) {
-        store.dispatch('setZoomLevel', value)
-        this.itemSize = (value + 1) * 75
+      set(value) {
+        store.commit("SET_SELECTED_IMAGE_IDS", value);
       }
     },
     filterWord: {
-      get () {
-        return store.state.App.filterWord
-      },
-      set (value) {
-        store.commit('SET_FILTER_WORD', value)
+      get() {
+        return store.state.App.filterWord;
       }
     },
     filteredImages: {
-      get () {
-        return store.state.App.filteredImages
+      get() {
+        return store.state.App.filteredImages;
       }
     },
     imageCount: {
-      get () {
-        return store.state.App.filteredImages.length
+      get() {
+        return store.state.App.filteredImages.length;
       }
     },
     selectedFolder: {
-      get () {
-        return store.state.App.selectedFolder
+      get() {
+        return store.state.App.selectedFolder;
       }
     },
     selectedSubFolder: {
-      get () {
-        return store.state.App.selectedSubFolder
+      get() {
+        return store.state.App.selectedSubFolder;
       },
-      set (value) {
-        store.commit('SET_SELECTED_SUB_FOLDER', value)
+      set(value) {
+        store.commit("SET_SELECTED_SUB_FOLDER", value);
       }
     },
     folders: {
-      get () {
-        return store.state.App.folders
+      get() {
+        return store.state.App.folders;
       }
     },
     imageSortType: {
-      get () {
-        return store.state.App.imageSortType
+      get() {
+        return store.state.App.imageSortType;
       },
-      set (value) {
-        store.commit('SET_IMAGE_SORT_TYPE', value)
-      }
-    },
-    changingSortType: {
-      get () {
-        return store.state.Center.changingSortType
-      },
-      set (value) {
-        store.commit('SET_CHANGING_SORT_TYPE', value)
+      set(value) {
+        store.commit("SET_IMAGE_SORT_TYPE", value);
       }
     },
     layoutType: {
-      get () {
-        return store.state.App.layoutType
+      get() {
+        return store.state.App.layoutType;
       },
-      set (value) {
-        store.commit('SET_LAYOUT_TYPE', value)
+      set(value) {
+        store.commit("SET_LAYOUT_TYPE", value);
+      }
+    },
+    zoomLevel: {
+      get() {
+        return store.state.App.zoomLevel;
       }
     }
   },
-  mounted () {
-    $('.container').on('click', '.item .thumbnail', this.itemClick)
-    $('.container').on('mousedown', this.mousedown)
-    $(document).on('mousemove', this.mousemove)
-    $(document).on('mouseup', this.mouseup)
+  mounted() {
+    $(".container").on("click", ".item .thumbnail", this.itemClick);
+    $(".container").on("mousedown", this.mousedown);
+    $(document).on("mousemove", this.mousemove);
+    $(document).on("mouseup", this.mouseup);
     if (store.state.App.folderMap[store.state.App.selectedFolder]) {
-      this.subFolders = store.state.App.folderMap[store.state.App.selectedFolder].children
+      this.subFolders =
+        store.state.App.folderMap[store.state.App.selectedFolder].children;
     }
   },
   watch: {
-    // selected (newV) {
-    //   // store.commit('SET_SELECTED_IMAGE_IDS', _.cloneDeep(newV))
-    // },
-    folders () {
+    folders() {
       if (store.state.App.folderMap[store.state.App.selectedFolder]) {
-        this.subFolders = store.state.App.folderMap[store.state.App.selectedFolder].children
+        this.subFolders =
+          store.state.App.folderMap[store.state.App.selectedFolder].children;
       } else {
-        this.subFolders = []
+        this.subFolders = [];
       }
     },
-    selectedFolder () {
+    selectedFolder() {
       if (store.state.App.folderMap[store.state.App.selectedFolder]) {
-        this.subFolders = store.state.App.folderMap[store.state.App.selectedFolder].children
+        this.subFolders =
+          store.state.App.folderMap[store.state.App.selectedFolder].children;
       } else {
-        this.subFolders = []
+        this.subFolders = [];
       }
     }
   }
-
-}
+};
 </script>
 <style lang="scss">
 .center-root {
@@ -563,128 +517,6 @@ export default {
   top: 0;
   bottom: 40px;
   overflow: hidden;
-  .top-area {
-    display: flex;
-    position: relative;
-    height: 40px;
-    overflow: visible;
-    width: 100%;
-    border-bottom: 1px solid #282828;
-    box-sizing: border-box;
-    -webkit-app-region: drag;
-    .slider-wrapper {
-      -webkit-app-region: no-drag;
-      width: 120px;
-      margin: auto;
-      color: white;
-    }
-    .sort-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition-duration: 0.4s;
-      overflow: hidden;
-      width: 94px;
-      &.hidden {
-        width: 0;
-      }
-    }
-    .func-wrapper {
-      -webkit-app-region: no-drag;
-      position: absolute;
-      right: 8px;
-      top: 0;
-      bottom: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .input-wrapper {
-        height: 24px;
-        overflow: hidden;
-        -webkit-app-region: no-drag;
-        position: relative;
-        input {
-          -webkit-app-region: no-drag;
-          display: block;
-          outline: none;
-          border: 0px;
-          border-radius: 2px;
-          width: 24px;
-          height: 20px;
-          background-color: transparent;
-          color: white;
-          overflow: hidden;
-          &:hover,
-          &:focus,
-          &.keep {
-            background-color: rgb(39, 39, 39);
-            width: calc(160px - 22px);
-            padding-left: 8px;
-            padding-right: 22px;
-          }
-          border: 1px solid transparent;
-          transition: all 0.3s ease, border 0.5s;
-          &:focus {
-            border: 1px solid rgb(49, 141, 226);
-          }
-          &:disabled {
-            cursor: not-allowed;
-          }
-        }
-        .search-in-input {
-          width: 24px;
-          background-size: 18px;
-          transition: all 0.3s;
-          top: 0;
-          bottom: 0;
-          right: 0;
-        }
-      }
-      .order-item {
-        padding: 4px;
-        border-radius: 2px;
-        width: 18px;
-        height: 18px;
-        color: white;
-        line-height: 18px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        &:hover {
-          background-color: #404040;
-        }
-        &.activated {
-          background-color: rgba(82, 82, 82, 0.685);
-        }
-        &.inverse {
-          transform: rotate(180deg);
-        }
-      }
-
-      .order-wrapper,
-      .filter-wrapper {
-        padding: 3px;
-        border-radius: 2px;
-        width: 18px;
-        height: 18px;
-        background: url(/static/svg/filter.svg) center no-repeat;
-        background-size: 20px;
-        border: 1px solid transparent;
-        transition: border 0.4s;
-        &:hover {
-          background-color: #404040;
-        }
-        &.activated {
-          background-color: rgba(82, 82, 82, 0.685);
-          border: 1px solid #318de2;
-        }
-      }
-      .order-wrapper {
-        background: url(/static/svg/order.svg) center no-repeat;
-        background-size: 20px;
-      }
-    }
-  }
 }
 
 .container {
@@ -740,11 +572,11 @@ export default {
 }
 
 .vue-slider-component {
-  .vue-slider{
+  .vue-slider {
     height: 4px !important;
     border-radius: 2px !important;
   }
-  .vue-slider-process{
+  .vue-slider-process {
     border-radius: 2px !important;
   }
   -webkit-app-region: no-drag;
@@ -778,24 +610,25 @@ export default {
     pointer-events: none;
   }
 }
-.center-context-menu,.center-context-menu .v-contextmenu{
+.center-context-menu,
+.center-context-menu .v-contextmenu {
   background-color: #333333 !important;
-  border:0px !important;
-  box-shadow: 0 0 8px rgba(0, 0, 0, .8) !important;
+  border: 0px !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8) !important;
   min-width: 180px;
   padding: 8px 0px !important;
-  .center-context-menu-sub .v-contextmenu{
+  .center-context-menu-sub .v-contextmenu {
     min-width: 140px;
   }
-  .v-contextmenu-item{
+  .v-contextmenu-item {
     color: white !important;
-    padding:8px 14px 8px 20px !important;
+    padding: 8px 14px 8px 20px !important;
   }
-  .v-contextmenu-item--hover{
+  .v-contextmenu-item--hover {
     background-color: #404040 !important;
   }
-  .v-contextmenu-divider{
-    border-bottom:1px solid #686868 !important;
+  .v-contextmenu-divider {
+    border-bottom: 1px solid #686868 !important;
   }
 }
 </style>

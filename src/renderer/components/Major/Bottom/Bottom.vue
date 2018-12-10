@@ -1,102 +1,105 @@
 <template>
   <div class="bottom-root">
-    <div class="progress progress-movement">
-    </div>
+    <div class="progress progress-movement"></div>
     <div class="setting-wrapper">
-      <img src="@/assets/svgs/gear-o.svg"/>
+      <img src="@/assets/svgs/gear-o.svg">
     </div>
     <PaletteProgress class="palette-progress" v-if="displayPaletteInd"></PaletteProgress>
     <div class="bottom-info" v-if="selectedImageIds.length>0 && fileProcessQueueLength===0">
       <div class="info">Selected: {{selectedImageIds.length}}</div>
       <div class="sep"></div>
-      <div class="info"> Total: {{selectedImageSize}}</div>
+      <div class="info">Total: {{selectedImageSize}}</div>
       <div class="sep"></div>
-      <div class="info"> Format: {{selectedImageFomat}}</div>
+      <div class="info">Format: {{selectedImageFomat}}</div>
     </div>
-    <div class="bottom-info progress-info">
-        {{fileProcessQueueLength===0?'Updating Index':`Processing: ${fileProcessedCount}/${fileProcessQueueLength}`}}
-    </div>
+    <div
+      class="bottom-info progress-info"
+    >{{fileProcessQueueLength===0?'Updating Index':`Processing: ${fileProcessedCount}/${fileProcessQueueLength}`}}</div>
   </div>
 </template>
 
 <script>
-import PaletteProgress from './PaletteProgress'
-import store from '@/store'
-import { ipcRenderer } from 'electron'
+import PaletteProgress from "./PaletteProgress";
+import store from "@/store";
+import { ipcRenderer } from "electron";
 export default {
   components: {
     PaletteProgress
   },
   computed: {
-    selectedImageIds () {
-      return store.state.App.selectedImageIds
+    selectedImageIds() {
+      return store.state.App.selectedImageIds;
     },
-    selectedImageItem () {
-      let filtered = store.state.App.images.filter((image) => {
-        return this.selectedImageIds.indexOf(image.id) !== -1
-      })
-      return filtered
+    selectedImageItem() {
+      let filtered = store.state.App.images.filter(image => {
+        return this.selectedImageIds.indexOf(image.id) !== -1;
+      });
+      return filtered;
     },
-    selectedImageSize () {
-      let kbSize = (this.selectedImageItem.reduce((prev, img) => {
-        return prev + img.size
-      }, 1) / 1024)
+    selectedImageSize() {
+      let kbSize =
+        this.selectedImageItem.reduce((prev, img) => {
+          return prev + img.size;
+        }, 1) / 1024;
       if (kbSize < 1024) {
-        return kbSize.toFixed(3) + ' KB'
+        return kbSize.toFixed(3) + " KB";
       }
-      return (kbSize / 1024).toFixed(3) + ' MB'
+      return (kbSize / 1024).toFixed(3) + " MB";
     },
-    selectedImageFomat () {
-      let formats = this.selectedImageItem.map((item) => {
-        return item.ext.toUpperCase()
-      })
+    selectedImageFomat() {
+      let formats = this.selectedImageItem.map(item => {
+        return item.ext.toUpperCase();
+      });
 
-      return Array.from(new Set(formats)).join(' ')
+      return Array.from(new Set(formats)).join(" ");
     },
-    fileProcessQueueLength () {
-      return store.state.App.fileProcessQueueLength
+    fileProcessQueueLength() {
+      return store.state.App.fileProcessQueueLength;
     },
-    fileProcessedCount () {
-      return store.state.App.fileProcessedCount
+    fileProcessedCount() {
+      return store.state.App.fileProcessedCount;
     },
-    displayPaletteInd () {
-      return store.state.App.paletteQueueLength !== 0
+    displayPaletteInd() {
+      return store.state.App.paletteQueueLength !== 0;
     }
   },
   watch: {
-    fileProcessedCount (newV) {
+    fileProcessedCount(newV) {
       if (this.fileProcessQueueLength !== 0 && this.fileProcessedCount !== 0) {
-        $('.progress-info').css({
+        $(".progress-info").css({
           opacity: 1,
-          visibility: 'visible'
-        })
-        $('.progress').css({
-          width: parseInt(this.fileProcessedCount / this.fileProcessQueueLength * 100) + '%',
+          visibility: "visible"
+        });
+        $(".progress").css({
+          width:
+            parseInt(
+              (this.fileProcessedCount / this.fileProcessQueueLength) * 100
+            ) + "%",
           opacity: 1
-        })
+        });
         if (this.fileProcessQueueLength <= this.fileProcessedCount) {
           setTimeout(() => {
-            store.commit('RESET_QUEUE_COUNT')
-            ipcRenderer.send('bg-start-palette')
-          }, 300)
+            store.commit("RESET_QUEUE_COUNT");
+            ipcRenderer.send("bg-start-palette");
+          }, 300);
         }
       } else {
-        $('.progress').css({
+        $(".progress").css({
           opacity: 0
-        })
-        $('.progress-info').css({
+        });
+        $(".progress-info").css({
           opacity: 0,
-          visibility: 'collapse'
-        })
+          visibility: "collapse"
+        });
         setTimeout(() => {
-          $('.progress').css({
+          $(".progress").css({
             width: 0
-          })
-        }, 300)
+          });
+        }, 300);
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -119,7 +122,7 @@ export default {
     background-color: rgb(49, 141, 226);
     position: absolute;
     left: 0;
-    transition: width .2s, opacity .3s;
+    transition: width 0.2s, opacity 0.3s;
   }
   .setting-wrapper {
     position: absolute;
@@ -138,7 +141,7 @@ export default {
       width: 20px;
     }
   }
-  .palette-progress{
+  .palette-progress {
     position: absolute;
     left: 38px;
   }
