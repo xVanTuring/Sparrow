@@ -8,7 +8,7 @@
         <div
           class="order-item"
           :class="{'activated':Math.abs(imageSortType)===1,'inverse':imageSortType===-1}"
-          @click="sortType(1)"
+          @click="setSortType(1)"
         >
           <span>N</span>
         </div>
@@ -16,7 +16,7 @@
         <div
           class="order-item"
           :class="{'activated':Math.abs(imageSortType)===2,'inverse':imageSortType===-2}"
-          @click="sortType(2)"
+          @click="setSortType(2)"
         >
           <span>M</span>
         </div>
@@ -24,13 +24,13 @@
         <div
           class="order-item"
           :class="{'activated':Math.abs(imageSortType)===3,'inverse':imageSortType===-3}"
-          @click="sortType(3)"
+          @click="setSortType(3)"
         >
           <span>S</span>
         </div>
         <div class="sep"></div>
       </div>
-      <div class="order-wrapper" :class="{'activated':changingSortType}" @click="orderClick"></div>
+      <div class="order-wrapper" :class="{'activated':changingSortType}" @click="sortStatusClick"></div>
       <div class="sep"></div>
       <div class="filter-wrapper"></div>
       <div class="sep"></div>
@@ -62,16 +62,15 @@ export default {
     };
   },
   methods: {
-    sortType(type) {
+    setSortType(type) {
       if (this.imageSortType === type) {
         this.imageSortType = -type;
       } else {
         this.imageSortType = type;
       }
     },
-    orderClick() {
+    sortStatusClick() {
       this.changingSortType = !this.changingSortType;
-      // store.commit('SET_CHANGING_SORT_TYPE', !this.changingSortType)
     }
   },
   computed: {

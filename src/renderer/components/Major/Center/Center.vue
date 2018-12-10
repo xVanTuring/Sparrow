@@ -3,20 +3,20 @@
     <CenterTop></CenterTop>
     <v-contextmenu ref="contextmenu" class="center-context-menu menu-container">
       <v-contextmenu-submenu title="Order" class="center-context-menu-sub">
-        <v-contextmenu-item>
+        <v-contextmenu-item @click="setSortType(1)">
           <MenuChooseItem title="Name" :activated="Math.abs(imageSortType)===1"/>
         </v-contextmenu-item>
-        <v-contextmenu-item>
+        <v-contextmenu-item @click="setSortType(3)">
           <MenuChooseItem title="File Size" :activated="Math.abs(imageSortType)===3"/>
         </v-contextmenu-item>
-        <v-contextmenu-item>
+        <v-contextmenu-item @click="setSortType(2)">
           <MenuChooseItem title="Modification Time" :activated="Math.abs(imageSortType)===2"/>
         </v-contextmenu-item>
         <v-contextmenu-item divider></v-contextmenu-item>
-        <v-contextmenu-item>
+        <v-contextmenu-item @click="reverseSortType(true)">
           <MenuChooseItem title="Up" :activated="imageSortType>0"/>
         </v-contextmenu-item>
-        <v-contextmenu-item>
+        <v-contextmenu-item @click="reverseSortType(false)">
           <MenuChooseItem title="Down" :activated="imageSortType<0"/>
         </v-contextmenu-item>
       </v-contextmenu-submenu>
@@ -75,7 +75,6 @@
         v-if="imageCount===0 && (subFolders.length===0)"
         :type="filterWord.length===0?0:1"
       />
-      <!-- fileDragOver -->
     </div>
     <div class="drop-file-mask" :class="{'file-drag-over':fileDragOver}">
       <div v-if="fileDragOver" class="tip">Drop to add</div>
@@ -83,7 +82,6 @@
   </div>
 </template>
 <script>
-// import vueSlider from "vue-slider-component";
 import MenuChooseItem from "./MenuChooseItem";
 import ImageItem from "./ImageItem";
 import EmptyFolder from "./EmptyFolder";
@@ -96,7 +94,6 @@ import { ipcRenderer, remote } from "electron";
 import _ from "lodash";
 export default {
   components: {
-    // vueSlider,
     ImageItem,
     InfiniteGrid,
     EmptyFolder,
@@ -224,13 +221,10 @@ export default {
         return;
       }
       if (!this.moving && $(e.target).is(".container") && this.imageCount > 0) {
-        // scrollbar detect
-        if (e.clientX > e.target.clientWidth + 230) {
-          // left-panel width
-          // console.log('On the scrollbar')
+        if (e.clientX > e.target.clientWidth + $(e.target).offset().left) {
+          // scrollbar detect
           return;
         }
-        // store.commit('SET_SELECTED_SUB_FOLDER', '')
         this.selectedSubFolder = "";
         this.moving = true;
         this.startX = e.offsetX;
@@ -413,7 +407,23 @@ export default {
           }
         }
       }
-    }, 150)
+    }, 150),
+    setSortType(value) {
+      if (Math.abs(this.imageSortType) === value) {
+        this.reverseSortType();
+      } else {
+        this.imageSortType = value;
+      }
+    },
+    reverseSortType(up) {
+      if (up == null) {
+        this.imageSortType = !this.imageSortType;
+      } else if (up) {
+        this.imageSortType = Math.abs(this.imageSortType);
+      } else {
+        this.imageSortType = -Math.abs(this.imageSortType);
+      }
+    }
   },
   computed: {
     selected: {
