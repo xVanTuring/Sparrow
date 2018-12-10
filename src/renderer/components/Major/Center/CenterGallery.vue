@@ -379,9 +379,94 @@ export default {
         return store.state.App.zoomLevel;
       }
     }
+  },
+  beforeDestroy() {
+    $(".container").off("click", ".item .thumbnail", this.itemClick);
+    $(".container").off("mousedown", this.mousedown);
+    $(document).off("mousemove", this.mousemove);
+    $(document).off("mouseup", this.mouseup);
   }
 };
 </script>
 
-<style>
+<style lang="scss">
+.container {
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  width: calc(100%);
+  background-color: #2d2d2d;
+  overflow: auto;
+  overflow-x: hidden;
+  margin: auto;
+  .type-images,
+  .type-folders {
+    color: rgb(211, 211, 211);
+    margin-top: 4px;
+    margin-left: 8px;
+    font-size: 90%;
+    .sub-folders {
+      display: flex;
+      flex-flow: row wrap;
+      margin-left: 24px;
+    }
+    pointer-events: none;
+  }
+  .mask {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    z-index: 100;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    &.visible {
+      background-color: rgba(rgb(49, 141, 226), 0.35);
+      border: 1px solid rgb(49, 141, 226);
+    }
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    // border:2px solid black;
+    box-sizing: border-box;
+    background-color: rgba(94, 94, 94, 0.24);
+    &:hover {
+      background-color: rgb(80, 80, 80);
+    }
+  }
+}
+.drop-file-mask {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 40px;
+  background-color: transparent;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  height: calc(100% - 41px);
+  width: calc(100% - 1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  &.file-drag-over {
+    border-color: rgb(49, 141, 226);
+    background-color: rgba(rgb(49, 141, 226), 0.15);
+  }
+  .tip {
+    padding: 0 50px;
+    line-height: 72px;
+    height: 72px;
+    border-radius: 3px;
+    background-color: rgb(49, 141, 226);
+    color: white;
+    pointer-events: none;
+  }
+}
 </style>
