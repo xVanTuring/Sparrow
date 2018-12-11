@@ -48,23 +48,28 @@
       <v-contextmenu-item divider></v-contextmenu-item>
       <v-contextmenu-item>Move to Trash</v-contextmenu-item>
     </v-contextmenu>
-    <CenterGallery></CenterGallery>
+    <CenterGallery v-if="!displayImage"></CenterGallery>
+    <CenterViewer v-else></CenterViewer>
   </div>
 </template>
 <script>
 import MenuChooseItem from "./MenuChooseItem";
 import CenterTop from "./CenterTop";
 import CenterGallery from "./CenterGallery";
+import CenterViewer from "./CenterViewer";
 import store from "@/store";
 import { remote } from "electron";
 export default {
   components: {
     MenuChooseItem,
     CenterTop,
-    CenterGallery
+    CenterGallery,
+    CenterViewer
   },
   data() {
-    return {};
+    return {
+      displayImage: false
+    };
   },
   methods: {
     setSortType(value) {

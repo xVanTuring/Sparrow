@@ -74,7 +74,10 @@ export default {
     dragenter(event) {
       event.preventDefault();
       this.dragEnterCounter++;
-      if (!store.state.App.ImageDragging) {
+      if (
+        event.dataTransfer.types &&
+        event.dataTransfer.types.indexOf("Files") !== -1
+      ) {
         this.fileDragOver = true;
       }
     },
@@ -114,6 +117,7 @@ export default {
             }
             return data;
           });
+        // TODO: only display rest number
         store.commit("SET_FILE_PROCESS_QUEUE_LENGTH", result.length);
         ipcRenderer.send("bg-add-local-images", { images: result });
       }

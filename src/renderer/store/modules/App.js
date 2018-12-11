@@ -15,7 +15,6 @@ const state = {
   folderMap: {},
   images: [],
   filteredImages: [],
-  ImageDragging: false,
   displaySetting: false,
   selectedImageIds: [],
   fileProcessQueueLength: 0,
@@ -143,9 +142,6 @@ const mutations = {
   },
   SET_LIBRARY_PATH (state, path) {
     state.libraryPath = path
-  },
-  SET_IMAGE_DRAGGING (state, dragging) {
-    state.ImageDragging = dragging
   },
   SET_DISPLAY_SETTING (state, bool) {
     state.displaySetting = bool

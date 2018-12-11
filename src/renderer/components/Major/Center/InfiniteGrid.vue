@@ -134,9 +134,6 @@ export default {
             }
           });
           $(".thumbnial-img").on("dragstart", that.itemDragStart);
-          $(".thumbnial-img").on("dragend", function(e) {
-            store.commit("SET_IMAGE_DRAGGING", false);
-          });
         }
       });
       if (this.list.length > 0) {
@@ -145,6 +142,8 @@ export default {
       this.resize(this.itemSize);
     },
     itemDragStart(event) {
+      // console.log();
+      event.originalEvent.dataTransfer.clearData();
       let $item = $(".item").has(event.target);
       let id = $item[0].id.replace("item-", "");
       if (this.selected.length > 0 && this.selected.indexOf(id) !== -1) {
@@ -152,10 +151,8 @@ export default {
           "list",
           JSON.stringify(this.selected)
         );
-        store.commit("SET_IMAGE_DRAGGING", true);
       } else {
         event.originalEvent.dataTransfer.setData("list", JSON.stringify([id]));
-        store.commit("SET_IMAGE_DRAGGING", true);
       }
     },
     removeItem(items) {
